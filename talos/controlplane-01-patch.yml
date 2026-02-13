@@ -1,0 +1,26 @@
+machine:
+  certSANs:
+    - pol-01.polarislab.dev
+  network:
+    hostname: pol-01
+    interfaces:
+      - interface: bond0
+        dhcp: true
+        bond:
+          mode: 802.3ad
+          interfaces:
+            - enp87s0
+            - enp89s0
+  install:
+    disk: /dev/nvme0n1
+    wipe: true
+    image: factory.talos.dev/metal-installer-secureboot/4d2d303ea6cf3c7474995528e4b92da18fcb497bfe6f84d300e3c0066e51133f:v1.12.4
+  nodeLabels:
+      node.kubernetes.io/exclude-from-external-load-balancers:
+      $patch: delete
+cluster:
+  allowSchedulingOnControlPlanes: true
+---
+apiVersion: v1alpha1
+kind: HostnameConfig
+$patch: delete
