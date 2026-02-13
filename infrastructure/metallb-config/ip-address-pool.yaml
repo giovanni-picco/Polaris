@@ -6,4 +6,4 @@ metadata:
   namespace: metallb-system
 spec:
   addresses:
-    - 10.10.90.0-10.10.90.255
+    - ${CLUSTER_IP_RANGE}

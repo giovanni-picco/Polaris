@@ -1,6 +1,7 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
+  - cluster-vars.yaml
   # Controller
   - cert-manager/ks.yaml
   - metallb/ks.yaml
@@ -13,6 +14,16 @@ resources:
 #  - longhorn-config/ks.yaml
 
 patches:
+  - target:
+      kind: Kustomization
+      group: kustomize.toolkit.fluxcd.io
+    patch: |
+      - op: add
+        path: /spec/postBuild
+        value:
+          substituteFrom:
+            - kind: ConfigMap
+              name: cluster-vars
   - target:
       kind: Kustomization
       group: kustomize.toolkit.fluxcd.io

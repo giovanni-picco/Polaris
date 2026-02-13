@@ -1,0 +1,10 @@
+# infrastructure/axeo/cluster-vars.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cluster-vars
+  namespace: flux-system
+data:
+  CLUSTER_NAME: polaris
+  CLUSTER_DOMAIN: polarislab.dev
+  CLUSTER_IP_RANGE: 10.10.90.0-10.10.90.255
