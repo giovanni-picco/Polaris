@@ -3,12 +3,12 @@ kind: Kustomization
 resources:
   # Controller
   - cert-manager/ks.yaml
-#  - metallb/ks.yaml
+   - metallb/ks.yaml
 #  - longhorn/ks.yaml
 #  - traefik/ks.yaml
   # Configs (dipendono dai rispettivi controller)
   - cert-manager-config/ks.yaml
-#  - metallb-config/ks.yaml
+  - metallb-config/ks.yaml
 #  - traefik-config/ks.yaml
 #  - longhorn-config/ks.yaml
 
