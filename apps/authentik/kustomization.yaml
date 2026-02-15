@@ -2,7 +2,7 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - ./00-namespace.yaml
-  - ./01-smtp.secret.yaml
+  - ./01-smtp.sops.yaml
   - ./02-certificate.yaml
   - ./03-secret-key.sops.yaml
   - ./04-database-cred.sops.yaml
