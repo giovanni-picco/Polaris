@@ -70,7 +70,6 @@ spec:
       enabled: true
       image:
         tag: latest
-      fullnameOverride: postgresql
       auth:
         username: authentik
         database: authentik
