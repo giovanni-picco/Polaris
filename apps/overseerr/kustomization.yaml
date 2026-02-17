@@ -1,9 +1,9 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - ./00-namespace.yml
-  - ./01-pvc.yml
-  - ./02-deployment.yml
-  - ./03-service.yml
+  - ./00-namespace.yaml
+  - ./01-pvc.yaml
+  - ./02-deployment.yaml
+  - ./03-service.yaml
   - ./04-certificate.yaml
-  - ./05-ingress.yml
+  - ./05-ingress.yaml
