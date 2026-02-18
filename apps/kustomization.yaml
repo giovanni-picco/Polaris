@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - ./authentik/ks.yaml
   - ./overseerr/ks.yaml
+  - ./plex/ks.yaml
 
 patches:
   - target:
