@@ -10,21 +10,24 @@ spec:
       sourceRef:
         kind: HelmRepository
         name: headlamp
-      version: "*"
+      version: "karpenter-0.2.0"
   interval: 1m0s
   values:
     ingress:
       enabled: true
-      ingressClassName: nginx
+      ingressClassName: traefik
+      annotations:
+          traefik.ingress.kubernetes.io/router.entrypoints: websecure
+          traefik.ingress.kubernetes.io/router.tls: "true"
       hosts:
-        - host: example.com # Change me
+        - host: headlamp.${CLUSTER_DOMAIN}
           paths:
             - path: /
               type: ImplementationSpecific
       tls:
         - secretName: headlamp-tls
           hosts:
-            - example.com # Change me
+            - headlamp.${CLUSTER_DOMAIN}
     config:
       pluginsDir: /build/plugins
     initContainers:
