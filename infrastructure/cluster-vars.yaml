@@ -8,3 +8,4 @@ data:
   CLUSTER_NAME: polaris
   CLUSTER_DOMAIN: polarislab.dev
   CLUSTER_IP_RANGE: 10.10.90.0-10.10.90.255
+  NAS_DOMAIN: nas-01.aethernode.it
