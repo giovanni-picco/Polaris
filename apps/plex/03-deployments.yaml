@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: plex
+  namespace: plex
+  labels:
+    app: plex
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: plex
+  template:
+    metadata:
+      labels:
+        app: plex
+    spec:
+      containers:
+        - name: plex
+          image: lscr.io/linuxserver/plex:latest
+          env:
+            - name: PUID
+              valueFrom:
+                configMapKeyRef:
+                  name: plex-config
+                  key: PUID
+            - name: PGID
+              valueFrom:
+                configMapKeyRef:
+                  name: plex-config
+                  key: PGID
+            - name: VERSION
+              valueFrom:
+                configMapKeyRef:
+                  name: plex-config
+                  key: VERSION
+            - name: TZ
+              valueFrom:
+                configMapKeyRef:
+                  name: plex-config
+                  key: TZ
+            - name: PLEX_CLAIM
+              valueFrom:
+                configMapKeyRef:
+                  name: plex-config
+                  key: PLEX_CLAIM
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: media
+              mountPath: /media
+          ports:
+            - containerPort: 32400
+              protocol: TCP
+              name: plex-web
+          resources:
+            requests:
+              memory: "2Gi"
+              cpu: "500m"
+              gpu.intel.com/i915: "1"
+            limits:
+              memory: "8Gi"
+              cpu: "4000m"
+              gpu.intel.com/i915: "1"
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: plex-config-pvc
+        - name: media
+          persistentVolumeClaim:
+            claimName: plex-media-pvc

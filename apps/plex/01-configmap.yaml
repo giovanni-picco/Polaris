@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: plex-config
+  namespace: plex
+data:
+  VERSION: "docker"
+  TZ: "Europe/Rome"
+  PLEX_CLAIM: "claim-AZvW9ebNVdzb46YtQN-z"  # https://www.plex.tv/claim
