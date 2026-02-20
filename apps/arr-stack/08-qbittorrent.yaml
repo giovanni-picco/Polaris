@@ -51,14 +51,7 @@ spec:
               value: "4h"
             - name: SERVER_COUNTRIES
               value: "Italy,Germany,France,Netherlands,Switzerland,Spain"
-            - name: HTTP_CONTROL_SERVER_ADDRESS
-              value: ":8000"
-            # Forwarding della porta BitTorrent attraverso NordVPN
-            # (NordVPN supporta port forwarding solo su alcuni server)
-            # Rimuovi se non necessario
           ports:
-            - containerPort: 8000
-              name: gluetun-ctrl
             - containerPort: 6881
               name: bittorrent-tcp
               protocol: TCP
@@ -70,18 +63,6 @@ spec:
               mountPath: /gluetun
             - name: dev-tun
               mountPath: /dev/net/tun
-          readinessProbe:
-            httpGet:
-              path: /v1/vpn/status
-              port: 8000
-            initialDelaySeconds: 10
-            periodSeconds: 10
-          livenessProbe:
-            httpGet:
-              path: /v1/vpn/status
-              port: 8000
-            initialDelaySeconds: 30
-            periodSeconds: 30
           resources:
             requests:
               memory: "64Mi"
