@@ -61,7 +61,7 @@ spec:
 
         # ---- MAIN: bazarr ----
         - name: bazarr
-          image: ghcr.io/hotio/bazarr:latest
+          image: ghcr.io/hotio/bazarr:release-v1.5.5
           env:
             - name: TZ
               value: "Europe/Rome"

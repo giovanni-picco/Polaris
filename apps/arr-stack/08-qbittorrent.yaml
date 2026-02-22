@@ -73,7 +73,7 @@ spec:
 
         # ---- MAIN: qbittorrent ----
         - name: qbittorrent
-          image: ghcr.io/hotio/qbittorrent:latest
+          image: ghcr.io/hotio/qbittorrent:release-v5.1.4
           env:
             - name: TZ
               value: "Europe/Rome"

@@ -58,10 +58,14 @@ spec:
               cpu: "200m"
         # ---- MAIN: prowlarr ----
         - name: prowlarr
-          image: ghcr.io/hotio/prowlarr:latest
+          image: ghcr.io/hotio/prowlarr:release-2.3.0.5236
           env:
             - name: TZ
               value: "Europe/Rome"
+            - name: PROWLARR__AUTH__ENABLED
+              value: "false"
+            - name: PROWLARR__AUTH__REQUIRED
+              value: "false"
           ports:
             - containerPort: 9696
               name: http

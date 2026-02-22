@@ -64,10 +64,14 @@ spec:
 
         # ---- MAIN: sonarr ----
         - name: sonarr
-          image: ghcr.io/hotio/sonarr:latest
+          image: ghcr.io/hotio/sonarr:release-4.0.16.2944
           env:
             - name: TZ
               value: "Europe/Rome"
+            - name: SONARR__AUTH__ENABLED
+              value: "false"
+            - name: SONARR__AUTH__REQUIRED
+              value: "false"
           ports:
             - containerPort: 8989
               name: http

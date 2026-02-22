@@ -61,10 +61,14 @@ spec:
 
         # ---- MAIN: radarr ----
         - name: radarr
-          image: ghcr.io/hotio/radarr:latest
+          image: ghcr.io/hotio/radarr:release-6.0.4.10291
           env:
             - name: TZ
               value: "Europe/Rome"
+            - name: RADARR__AUTH__ENABLED
+              value: "false"
+            - name: RADARR__AUTH__REQUIRED
+              value: "false"
           ports:
             - containerPort: 7878
               name: http

@@ -61,7 +61,7 @@ spec:
 
         # ---- MAIN: flaresolverr ----
         - name: flaresolverr
-          image: ghcr.io/flaresolverr/flaresolverr:latest
+          image: ghcr.io/flaresolverr/flaresolverr:v3.4.6
           env:
             - name: TZ
               value: "Europe/Rome"
