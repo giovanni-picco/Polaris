@@ -21,7 +21,7 @@ spec:
       containers:
         # ---- SIDECAR: gluetun ----
         - name: gluetun
-          image: qmcgaw/gluetun:latest
+          image: qmcgaw/gluetun:v3.41.1
           securityContext:
             capabilities:
               add: ["NET_ADMIN"]
@@ -67,6 +67,10 @@ spec:
           env:
             - name: TZ
               value: "Europe/Rome"
+            - name: RADARR__AUTH__AUTHENTICATIONREQUIRED
+              value: "Enabled"
+            - name: RADARR__AUTH__AUTHENTICATIONMETHOD
+              value: "External"
           ports:
             - containerPort: 7878
               name: http
@@ -139,6 +143,8 @@ spec:
   routes:
     - match: Host(`radarr.${CLUSTER_DOMAIN}`)
       kind: Rule
+      middlewares:
+        - name: authentik
       services:
         - name: radarr
           port: 7878

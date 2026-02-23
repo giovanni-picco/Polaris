@@ -1,27 +1,32 @@
 ---
+# ============================================================
+# QBITTORRENT — Deployment con gluetun sidecar
+# Nota: qBittorrent è il servizio più critico da proteggere
+# con VPN — è l'unico che apre porte di ascolto P2P (6881).
+# ============================================================
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: prowlarr
+  name: qbittorrent
   namespace: arr-stack
   labels:
-    app: prowlarr
+    app: qbittorrent
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: prowlarr
+      app: qbittorrent
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: prowlarr
+        app: qbittorrent
     spec:
       containers:
         # ---- SIDECAR: gluetun ----
         - name: gluetun
-          image: qmcgaw/gluetun:latest
+          image: qmcgaw/gluetun:v3.41.1
           securityContext:
             capabilities:
               add: ["NET_ADMIN"]
@@ -48,9 +53,18 @@ spec:
               value: "Italy,Germany,France,Netherlands,Switzerland,Spain"
             - name: FIREWALL_OUTBOUND_SUBNETS
               value: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
+          ports:
+            - containerPort: 6881
+              name: bittorrent-tcp
+              protocol: TCP
+            - containerPort: 6881
+              name: bittorrent-udp
+              protocol: UDP
           volumeMounts:
             - name: gluetun-config
               mountPath: /gluetun
+            - name: dev-tun
+              mountPath: /dev/net/tun
           resources:
             requests:
               memory: "64Mi"
@@ -58,33 +72,45 @@ spec:
             limits:
               memory: "256Mi"
               cpu: "200m"
-        # ---- MAIN: prowlarr ----
-        - name: prowlarr
-          image: ghcr.io/hotio/prowlarr:release-2.3.0.5236
+
+        # ---- MAIN: qbittorrent ----
+        - name: qbittorrent
+          image: ghcr.io/hotio/qbittorrent:release-v5.1.4
           env:
             - name: TZ
               value: "Europe/Rome"
+            - name: UMASK
+              value: "002"
+            - name: WEBUI_PORTS
+              value: "8085/tcp"
+            - name: LIBTORRENT
+              value: "v1"
           ports:
-            - containerPort: 9696
+            - containerPort: 8085
               name: http
           volumeMounts:
-            - name: prowlarr-config
+            - name: qbittorrent-config
               mountPath: /config
+            - name: media-torrents
+              mountPath: /data/torrents
           resources:
             requests:
-              memory: "128Mi"
-              cpu: "50m"
+              memory: "256Mi"
+              cpu: "100m"
             limits:
-              memory: "512Mi"
-              cpu: "300m"
+              memory: "2Gi"
+              cpu: "500m"
 
       volumes:
         - name: gluetun-config
           persistentVolumeClaim:
             claimName: pvc-config-gluetun
-        - name: prowlarr-config
+        - name: qbittorrent-config
           persistentVolumeClaim:
-            claimName: pvc-config-prowlarr
+            claimName: pvc-config-qbittorrent
+        - name: media-torrents
+          persistentVolumeClaim:
+            claimName: pvc-media-torrents
         - name: dev-tun
           hostPath:
             path: /dev/net/tun
@@ -94,45 +120,47 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: prowlarr
+  name: qbittorrent
   namespace: arr-stack
 spec:
   selector:
-    app: prowlarr
+    app: qbittorrent
   ports:
     - name: http
-      port: 9696
-      targetPort: 9696
+      port: 8085
+      targetPort: 8085
   type: ClusterIP
 
 ---
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: prowlarr-cert
+  name: qbittorrent-cert
   namespace: arr-stack
 spec:
-  secretName: prowlarr-tls
+  secretName: qbittorrent-tls
   issuerRef:
     name: letsencrypt-prod
     kind: ClusterIssuer
   dnsNames:
-    - prowlarr.${CLUSTER_DOMAIN}
+    - qbittorrent.${CLUSTER_DOMAIN}
 
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: prowlarr
+  name: qbittorrent
   namespace: arr-stack
 spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`prowlarr.${CLUSTER_DOMAIN}`)
+    - match: Host(`qbittorrent.${CLUSTER_DOMAIN}`)
       kind: Rule
+      middlewares:
+        - name: authentik
       services:
-        - name: prowlarr
-          port: 9696
+        - name: qbittorrent
+          port: 8085
   tls:
-    secretName: prowlarr-tls
+    secretName: qbittorrent-tls

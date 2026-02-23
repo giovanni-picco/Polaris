@@ -1,27 +1,30 @@
 ---
+# ============================================================
+# SONARR — Deployment con gluetun sidecar
+# ============================================================
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: bazarr
+  name: sonarr
   namespace: arr-stack
   labels:
-    app: bazarr
+    app: sonarr
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: bazarr
+      app: sonarr
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: bazarr
+        app: sonarr
     spec:
       containers:
         # ---- SIDECAR: gluetun ----
         - name: gluetun
-          image: qmcgaw/gluetun:latest
+          image: qmcgaw/gluetun:v3.41.1
           securityContext:
             capabilities:
               add: ["NET_ADMIN"]
@@ -48,7 +51,7 @@ spec:
               value: "Italy,Germany,France,Netherlands,Switzerland,Spain"
             - name: FIREWALL_OUTBOUND_SUBNETS
               value: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
-          svolumeMounts:
+          volumeMounts:
             - name: gluetun-config
               mountPath: /gluetun
             - name: dev-tun
@@ -61,40 +64,41 @@ spec:
               memory: "256Mi"
               cpu: "200m"
 
-        # ---- MAIN: bazarr ----
-        - name: bazarr
-          image: ghcr.io/hotio/bazarr:release-v1.5.5
+        # ---- MAIN: sonarr ----
+        - name: sonarr
+          image: ghcr.io/hotio/sonarr:release-4.0.16.2944
           env:
             - name: TZ
               value: "Europe/Rome"
-            - name: UMASK
-              value: "002"
+            - name: SONARR__AUTH__AUTHENTICATIONREQUIRED
+              value: "Enabled"
+            - name: SONARR__AUTH__AUTHENTICATIONMETHOD
+              value: "External"
           ports:
-            - containerPort: 6767
+            - containerPort: 8989
               name: http
           volumeMounts:
-            - name: bazarr-config
+            - name: sonarr-config
               mountPath: /config
-            - name: media-media
-              mountPath: /data/media
+            - name: media-root
+              mountPath: /data
           resources:
             requests:
               memory: "128Mi"
-              cpu: "25m"
+              cpu: "50m"
             limits:
-              memory: "256Mi"
-              cpu: "200m"
-
+              memory: "512Mi"
+              cpu: "300m"
       volumes:
         - name: gluetun-config
           persistentVolumeClaim:
             claimName: pvc-config-gluetun
-        - name: bazarr-config
+        - name: sonarr-config
           persistentVolumeClaim:
-            claimName: pvc-config-bazarr
-        - name: media-media
+            claimName: pvc-config-sonarr
+        - name: media-root
           persistentVolumeClaim:
-            claimName: pvc-media-media
+            claimName: pvc-media-root
         - name: dev-tun
           hostPath:
             path: /dev/net/tun
@@ -104,45 +108,47 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: bazarr
+  name: sonarr
   namespace: arr-stack
 spec:
   selector:
-    app: bazarr
+    app: sonarr
   ports:
     - name: http
-      port: 6767
-      targetPort: 6767
+      port: 8989
+      targetPort: 8989
   type: ClusterIP
 
 ---
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: bazarr-cert
+  name: sonarr-cert
   namespace: arr-stack
 spec:
-  secretName: bazarr-tls
+  secretName: sonarr-tls
   issuerRef:
     name: letsencrypt-prod
     kind: ClusterIssuer
   dnsNames:
-    - bazarr.${CLUSTER_DOMAIN}
+    - sonarr.${CLUSTER_DOMAIN}
 
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: bazarr
+  name: sonarr
   namespace: arr-stack
 spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`bazarr.${CLUSTER_DOMAIN}`)
+    - match: Host(`sonarr.${CLUSTER_DOMAIN}`)
       kind: Rule
+      middlewares:
+        - name: authentik
       services:
-        - name: bazarr
-          port: 6767
+        - name: sonarr
+          port: 8989
   tls:
-    secretName: bazarr-tls
+    secretName: sonarr-tls

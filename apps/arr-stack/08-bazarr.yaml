@@ -1,30 +1,27 @@
 ---
-# ============================================================
-# SONARR — Deployment con gluetun sidecar
-# ============================================================
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: sonarr
+  name: bazarr
   namespace: arr-stack
   labels:
-    app: sonarr
+    app: bazarr
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: sonarr
+      app: bazarr
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: sonarr
+        app: bazarr
     spec:
       containers:
         # ---- SIDECAR: gluetun ----
         - name: gluetun
-          image: qmcgaw/gluetun:latest
+          image: qmcgaw/gluetun:v3.41.1
           securityContext:
             capabilities:
               add: ["NET_ADMIN"]
@@ -51,7 +48,7 @@ spec:
               value: "Italy,Germany,France,Netherlands,Switzerland,Spain"
             - name: FIREWALL_OUTBOUND_SUBNETS
               value: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
-          volumeMounts:
+          svolumeMounts:
             - name: gluetun-config
               mountPath: /gluetun
             - name: dev-tun
@@ -64,37 +61,40 @@ spec:
               memory: "256Mi"
               cpu: "200m"
 
-        # ---- MAIN: sonarr ----
-        - name: sonarr
-          image: ghcr.io/hotio/sonarr:release-4.0.16.2944
+        # ---- MAIN: bazarr ----
+        - name: bazarr
+          image: ghcr.io/hotio/bazarr:release-v1.5.5
           env:
             - name: TZ
               value: "Europe/Rome"
+            - name: UMASK
+              value: "002"
           ports:
-            - containerPort: 8989
+            - containerPort: 6767
               name: http
           volumeMounts:
-            - name: sonarr-config
+            - name: bazarr-config
               mountPath: /config
-            - name: media-root
-              mountPath: /data
+            - name: media-media
+              mountPath: /data/media
           resources:
             requests:
               memory: "128Mi"
-              cpu: "50m"
+              cpu: "25m"
             limits:
-              memory: "512Mi"
-              cpu: "300m"
+              memory: "256Mi"
+              cpu: "200m"
+
       volumes:
         - name: gluetun-config
           persistentVolumeClaim:
             claimName: pvc-config-gluetun
-        - name: sonarr-config
+        - name: bazarr-config
           persistentVolumeClaim:
-            claimName: pvc-config-sonarr
-        - name: media-root
+            claimName: pvc-config-bazarr
+        - name: media-media
           persistentVolumeClaim:
-            claimName: pvc-media-root
+            claimName: pvc-media-media
         - name: dev-tun
           hostPath:
             path: /dev/net/tun
@@ -104,45 +104,47 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: sonarr
+  name: bazarr
   namespace: arr-stack
 spec:
   selector:
-    app: sonarr
+    app: bazarr
   ports:
     - name: http
-      port: 8989
-      targetPort: 8989
+      port: 6767
+      targetPort: 6767
   type: ClusterIP
 
 ---
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: sonarr-cert
+  name: bazarr-cert
   namespace: arr-stack
 spec:
-  secretName: sonarr-tls
+  secretName: bazarr-tls
   issuerRef:
     name: letsencrypt-prod
     kind: ClusterIssuer
   dnsNames:
-    - sonarr.${CLUSTER_DOMAIN}
+    - bazarr.${CLUSTER_DOMAIN}
 
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: sonarr
+  name: bazarr
   namespace: arr-stack
 spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`sonarr.${CLUSTER_DOMAIN}`)
+    - match: Host(`bazarr.${CLUSTER_DOMAIN}`)
       kind: Rule
+      middlewares:
+        - name: authentik
       services:
-        - name: sonarr
-          port: 8989
+        - name: bazarr
+          port: 6767
   tls:
-    secretName: sonarr-tls
+    secretName: bazarr-tls

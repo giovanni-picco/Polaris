@@ -4,9 +4,10 @@ resources:
 - ./00-namespace.yaml
 - ./01-secrets.sops.yaml
 - ./02-pv-pvc.yaml
-- ./03-prowlarr.yaml
-- ./04-flaresolverr.yaml
-- ./05-sonarr.yaml
+- ./03-middleware.yaml
+- ./04-qbittorrent.yaml
+- ./05-prowlarr.yaml
 - ./06-radarr.yaml
-- ./07-bazarr.yaml
-- ./08-qbittorrent.yaml
+- ./07-sonarr.yaml
+- ./08-bazarr.yaml
+- ./09-flaresolverr.yaml
