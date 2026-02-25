@@ -22,49 +22,6 @@ spec:
         app: sonarr
     spec:
       containers:
-        # ---- SIDECAR: gluetun ----
-        - name: gluetun
-          image: qmcgaw/gluetun:v3.41.1
-          securityContext:
-            capabilities:
-              add: ["NET_ADMIN"]
-          env:
-            - name: VPN_SERVICE_PROVIDER
-              value: "nordvpn"
-            - name: VPN_TYPE
-              value: "openvpn"
-            - name: OPENVPN_USER
-              valueFrom:
-                secretKeyRef:
-                  name: gluetun-secret
-                  key: OPENVPN_USER
-            - name: OPENVPN_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: gluetun-secret
-                  key: OPENVPN_PASSWORD
-            - name: TZ
-              value: "Europe/Rome"
-            - name: UPDATER_PERIOD
-              value: "4h"
-            - name: SERVER_COUNTRIES
-              value: "Italy,Germany,France,Netherlands,Switzerland,Spain"
-            - name: FIREWALL_OUTBOUND_SUBNETS
-              value: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
-          volumeMounts:
-            - name: gluetun-config
-              mountPath: /gluetun
-            - name: dev-tun
-              mountPath: /dev/net/tun
-          resources:
-            requests:
-              memory: "64Mi"
-              cpu: "50m"
-            limits:
-              memory: "256Mi"
-              cpu: "200m"
-
-        # ---- MAIN: sonarr ----
         - name: sonarr
           image: ghcr.io/hotio/sonarr:release-4.0.16.2944
           env:
@@ -90,19 +47,12 @@ spec:
               memory: "512Mi"
               cpu: "300m"
       volumes:
-        - name: gluetun-config
-          persistentVolumeClaim:
-            claimName: pvc-config-gluetun
         - name: sonarr-config
           persistentVolumeClaim:
             claimName: pvc-config-sonarr
         - name: media-root
           persistentVolumeClaim:
             claimName: pvc-media-root
-        - name: dev-tun
-          hostPath:
-            path: /dev/net/tun
-            type: CharDevice
 
 ---
 apiVersion: v1
