@@ -1,103 +1,103 @@
 {
-  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:base",
-    ":dependencyDashboard",
-    ":semanticCommits"
-  ],
-
-  "onboarding": true,
-  "requireConfig": "optional",
-
-  "schedule": [
-    "before 9am on Monday"
-  ],
-  "ignoreDeps": [],
-
-  "commitMessagePrefix": "chore(deps): ",
-  "commitMessageAction": "bump",
-  "commitMessageTopic": "{{depName}} to {{newVersion}}",
-  "prConcurrentLimit": 3,
-  "prCreation": "not-pending",
-  
-  "automerge": false,
-  "automergeType": "pr",
-  "automergeStrategy": "squash",
-  
-  "packageRules": [
-    {
-      "description": "Group patch updates of same package",
-      "matchUpdateTypes": ["patch"],
-      "groupName": "patch updates",
-      "schedule": ["before 9am on Monday"]
-    },
-    {
-      "description": "Group minor updates separately",
-      "matchUpdateTypes": ["minor"],
-      "groupName": "minor updates",
-      "schedule": ["before 9am on Monday"],
-      "labels": ["kind/minor-bump"]
-    },
-    {
-      "description": "Group major updates separately - richiede più attenzione",
-      "matchUpdateTypes": ["major"],
-      "groupName": "major updates",
-      "schedule": ["before 9am on Monday"],
-      "labels": ["kind/major-bump", "review-required"],
-      "minimumReleaseAge": "7 days"
-    }
-  ],
-
-  "docker": {
-    "enabled": true,
+    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+    "extends": [
+        "config:base",
+        ":dependencyDashboard",
+        ":semanticCommits"
+    ],
+    "onboarding": true,
+    "requireConfig": "optional",
+    "schedule": [
+        "before 9am on Monday"
+    ],
+    "ignoreDeps": [],
+    "commitMessagePrefix": "chore(deps): ",
+    "commitMessageAction": "bump",
+    "commitMessageTopic": "{{depName}} to {{newVersion}}",
+    "prConcurrentLimit": 3,
+    "prCreation": "not-pending",
     "automerge": false,
-  },
-  "dockerCompose": {
-    "enabled": false
-  },
-
-  "helm": {
-    "enabled": true,
-    "automerge": false
-  },
-
-  "kustomize": {
-    "enabled": true,
-    "automerge": false
-  },
-
-  "flux": {
-    "enabled": true,
-    "automerge": false
-  },
-
-  "ignorePaths": [
-    "**/node_modules/**",
-    "**/.*",
-    "**/.git/**",
-    ".github"
-  ],
-  "enabledManagers": [
-    "dockerfile",
-    "docker-compose",
-    "helm-values",
-    "helm-chart",
-    "kustomize",
-    "flux",
-    "regex"
-  ],
-
-  "labels": [
-    "renovate",
-    "k8s-deps"
-  ],
-  "assignees": [],
-  "reviewers": [],
-
-  "platform": "github",
-  "gitIgnore": true,
-  "postUpdateOptions": [
-    "gomodTidy",
-    "yarnDedupeHighest"
-  ]
+    "automergeType": "pr",
+    "automergeStrategy": "squash",
+    "packageRules": [
+        {
+            "description": "Group patch updates of same package",
+            "matchUpdateTypes": [
+                "patch"
+            ],
+            "groupName": "patch updates",
+            "schedule": [
+                "before 9am on Monday"
+            ]
+        },
+        {
+            "description": "Group minor updates separately",
+            "matchUpdateTypes": [
+                "minor"
+            ],
+            "groupName": "minor updates",
+            "schedule": [
+                "before 9am on Monday"
+            ],
+            "labels": [
+                "kind/minor-bump"
+            ]
+        },
+        {
+            "description": "Group major updates separately - richiede più attenzione",
+            "matchUpdateTypes": [
+                "major"
+            ],
+            "groupName": "major updates",
+            "schedule": [
+                "before 9am on Monday"
+            ],
+            "labels": [
+                "kind/major-bump",
+                "review-required"
+            ],
+            "minimumReleaseAge": "7 days"
+        }
+    ],
+    "docker": {
+        "enabled": true,
+        "automerge": false
+    },
+    "dockerCompose": {
+        "enabled": false
+    },
+    "helm": {
+        "enabled": true,
+        "automerge": false
+    },
+    "kustomize": {
+        "enabled": true,
+        "automerge": false
+    },
+    "flux": {
+        "enabled": true,
+        "automerge": false
+    },
+    "ignorePaths": [
+        "**/node_modules/**",
+        "**/.*",
+        "**/.git/**",
+        ".github"
+    ],
+    "enabledManagers": [
+        "dockerfile",
+        "helm-values",
+        "helm-chart",
+        "kustomize",
+        "flux",
+        "regex"
+    ],
+    "labels": [
+        "renovate",
+        "k8s-deps"
+    ],
+    "assignees": [],
+    "reviewers": [],
+    "platform": "github",
+    "gitIgnore": true
 }
