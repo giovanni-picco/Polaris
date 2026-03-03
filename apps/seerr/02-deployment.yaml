@@ -16,16 +16,13 @@ spec:
       containers:
         - name: seerr
           image: ghcr.io/seerr-team/seerr:v3.1.0
-          imagePullPolicy: Always
           ports:
             - containerPort: 5055
           env:
             - name: LOG_LEVEL
-              value: "debug"
+              value: debug
             - name: TZ
-              value: "Europe/Rome"
-            - name: PORT
-              value: "5055"
+              value: Europe/Rome
           volumeMounts:
             - name: config
               mountPath: /app/config
@@ -36,6 +33,16 @@ spec:
             limits:
               cpu: 500m
               memory: 512Mi
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - "wget --no-verbose --tries=1 --spider http://localhost:5055/api/v1/status || exit 1"
+            initialDelaySeconds: 20
+            periodSeconds: 15
+            timeoutSeconds: 3
+            failureThreshold: 3
       volumes:
         - name: config
           persistentVolumeClaim:
