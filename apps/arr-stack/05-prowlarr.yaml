@@ -35,7 +35,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: gluetun-secret
-                  key: OPENVPN_USER              
+                  key: OPENVPN_USER
             - name: OPENVPN_PASSWORD
               valueFrom:
                 secretKeyRef:

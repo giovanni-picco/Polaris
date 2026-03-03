@@ -25,6 +25,16 @@ spec:
             privileged: true
             capabilities:
               add: ["NET_ADMIN"]
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+            - name: tcp-shadowsocks
+              containerPort: 6881
+              protocol: TCP
+            - name: udp-shadowsocks
+              containerPort: 6881
+              protocol: UDP
           envFrom:
             - configMapRef:
                 name: gluetun-configmap
@@ -71,18 +81,18 @@ spec:
         - name: qbittorrent
           image: lscr.io/linuxserver/qbittorrent:5.1.4
           env:
-          - name: TZ
-            value: Europe/Rome
-          - name: PUID
-            value: "1000"
-          - name: PGID
-            value: "1000"
-          - name: WEBUI_PORT
-            value: "8080"                      
+            - name: TZ
+              value: Europe/Rome
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+            - name: WEBUI_PORT
+              value: "8080"
           ports:
-          - name: http
-            protocol: TCP
-            containerPort: 8080    
+            - name: http
+              protocol: TCP
+              containerPort: 8080
           volumeMounts:
             - name: qbittorrent-config
               mountPath: /config
@@ -116,9 +126,6 @@ spec:
     - name: http
       port: 8080
       targetPort: 8080
-    - name: shadowsocks-02
-      protocol: UDP
-      port: 8388
   type: ClusterIP
 
 ---
