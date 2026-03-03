@@ -28,7 +28,7 @@ spec:
               add: ["NET_ADMIN"]
           envFrom:
             - configMapRef:
-                name: gluetun-configmap
+                name: gluetun-configmap-openvpn
           env:
             - name: FIREWALL_INPUT_PORTS
               value: "9696"

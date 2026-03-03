@@ -1,12 +1,26 @@
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: gluetun-configmap
+  name: gluetun-configmap-wireguard
   namespace: arr-stack
 data:
   TZ: "Etc/UTC"
   VPN_SERVICE_PROVIDER: "nordvpn"
   VPN_TYPE: "wireguard"
+  FIREWALL_OUTBOUND_SUBNETS: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
+  DNS_KEEP_NAMESERVER: "on"
+  DOT: "off"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gluetun-configmap-openvpn
+  namespace: arr-stack
+data:
+  TZ: "Etc/UTC"
+  VPN_SERVICE_PROVIDER: "nordvpn"
+  VPN_TYPE: "openvpn"
   FIREWALL_OUTBOUND_SUBNETS: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
   DNS_KEEP_NAMESERVER: "on"
   DOT: "off"

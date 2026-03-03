@@ -33,7 +33,7 @@ spec:
               add: ["NET_ADMIN"]
           envFrom:
             - configMapRef:
-                name: gluetun-configmap
+                name: gluetun-configmap-wireguard
           env:
             - name: FIREWALL_INPUT_PORTS
               value: "8080,6881"
