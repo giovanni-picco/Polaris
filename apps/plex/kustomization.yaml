@@ -5,6 +5,6 @@ resources:
 - ./01-configmap.yaml
 - ./02-persistent-volume.yaml
 - ./03-deployments.yaml
-# - ./04-service.yaml
-# - ./05-certificate.yaml
-# - ./06-ingress.yaml
+- ./04-service.yaml
+- ./05-certificate.yaml
+- ./06-ingress.yaml
