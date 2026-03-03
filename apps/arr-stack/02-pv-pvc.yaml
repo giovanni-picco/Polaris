@@ -103,9 +103,22 @@ spec:
       storage: 2Ti
   volumeName: pv-media-torrents
   storageClassName: ""
+---
 # ============================================================
 # PersistentVolumes per config locali
 # ============================================================
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-config-gluetun-qbittorrent
+  namespace: arr-stack
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: longhorn
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -188,7 +201,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: pvc-config-deluge
+  name: pvc-config-qbittorrent
   namespace: arr-stack
 spec:
   accessModes:
