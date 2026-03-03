@@ -3,9 +3,10 @@ kind: Kustomization
 resources:
 - ./00-namespace.yaml
 - ./01-secrets.sops.yaml
+- ./01-deluge-vpn.sops.yaml
 - ./02-pv-pvc.yaml
 - ./03-middleware.yaml
-- ./04-qbittorrent.yaml
+- ./04-deluge.yaml
 - ./05-prowlarr.yaml
 - ./06-radarr.yaml
 - ./07-sonarr.yaml
