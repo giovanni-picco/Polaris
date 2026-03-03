@@ -31,24 +31,33 @@ spec:
             privileged: true
             capabilities:
               add: ["NET_ADMIN"]
+          envFrom:
+            - configMapRef:
+                name: gluetun-configmap
           env:
-            - name: TZ
-              value: "Europe/Rome"
-            - name: SERVER_COUNTRIES
-              value: "Italy,Germany,France,Netherlands,Switzerland,Spain"
-            - name: VPN_SERVICE_PROVIDER
-              value: "nordvpn"
-            - name: DNS_KEEP_NAMESERVER
-              value: "off"
-            - name: DOT
-              value: "off"
-            - name: VPN_TYPE
-              value: "wireguard"
+            - name: FIREWALL_INPUT_PORTS
+              value: "8080,6881"
             - name: WIREGUARD_PRIVATE_KEY
               valueFrom:
                 secretKeyRef:
                   name: gluetun-secret
                   key: WIREGUARD_SECRET
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - "ping -c 1 https://google.it/"
+            initialDelaySeconds: 5
+            periodSeconds: 3
+            timeoutSeconds: 2
+            failureThreshold: 3
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - "ping -c 1 https://google.it/"
           resources:
             requests:
               memory: "64Mi"
@@ -106,6 +115,9 @@ spec:
     - name: http
       port: 8080
       targetPort: 8080
+    - name: shadowsocks-02
+      protocol: UDP
+      port: 8388
   type: ClusterIP
 
 ---

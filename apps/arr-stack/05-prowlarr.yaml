@@ -23,34 +23,45 @@ spec:
         - name: gluetun
           image: qmcgaw/gluetun:v3.41.1
           securityContext:
+            privileged: true
             capabilities:
               add: ["NET_ADMIN"]
+          envFrom:
+            - configMapRef:
+                name: gluetun-configmap
           env:
-            - name: VPN_SERVICE_PROVIDER
-              value: "nordvpn"
-            - name: VPN_TYPE
-              value: "openvpn"
+            - name: FIREWALL_INPUT_PORTS
+              value: "9696"
             - name: OPENVPN_USER
               valueFrom:
                 secretKeyRef:
                   name: gluetun-secret
-                  key: OPENVPN_USER
+                  key: OPENVPN_USER              
             - name: OPENVPN_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: gluetun-secret
                   key: OPENVPN_PASSWORD
-            - name: TZ
-              value: "Europe/Rome"
-            - name: UPDATER_PERIOD
-              value: "4h"
-            - name: SERVER_COUNTRIES
-              value: "Italy,Germany,France,Netherlands,Switzerland,Spain"
-            - name: FIREWALL_OUTBOUND_SUBNETS
-              value: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
-          volumeMounts:
-            - name: gluetun-config
-              mountPath: /gluetun
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - "ping -c 1 https://google.it/"
+            initialDelaySeconds: 5
+            periodSeconds: 3
+            timeoutSeconds: 2
+            failureThreshold: 3
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - "ping -c 1 https://google.it/"
+            initialDelaySeconds: 10
+            periodSeconds: 15
+            timeoutSeconds: 2
+            failureThreshold: 3
           resources:
             requests:
               memory: "64Mi"
@@ -83,16 +94,9 @@ spec:
               cpu: "300m"
 
       volumes:
-        - name: gluetun-config
-          persistentVolumeClaim:
-            claimName: pvc-config-gluetun-prowlarr
         - name: prowlarr-config
           persistentVolumeClaim:
             claimName: pvc-config-prowlarr
-        - name: dev-tun
-          hostPath:
-            path: /dev/net/tun
-            type: CharDevice
 
 ---
 apiVersion: v1
