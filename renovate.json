@@ -1,0 +1,17 @@
+{
+        "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+        "extends": [
+                "config:recommended"
+        ],
+        "flux": {
+                "managerFilePatterns": [
+                        "/flux-system/.+\\.yaml$/",
+                        "/k8s//.+\\.yaml$/"
+                ]
+        },
+        "kubernetes": {
+                "managerFilePatterns": [
+                        "/k8s//.+\\.yaml$/"
+                ]
+        }
+}
