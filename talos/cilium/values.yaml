@@ -1,0 +1,50 @@
+---
+# ─────────────────────────────────────────────
+# Cilium — Helm values per POLARIS (Talos Linux)
+# ─────────────────────────────────────────────
+
+kubeProxyReplacement: true
+k8sServiceHost: 10.10.5.10
+k8sServicePort: 6443
+
+# IPAM
+ipam:
+  mode: kubernetes
+
+# eBPF masquerade (no iptables)
+bpf:
+  masquerade: true
+
+# L2 Announcements
+l2announcements:
+  enabled: true
+
+externalIPs:
+  enabled: true
+
+# ─────────────────────────────────────────────
+# Talos-specific
+# ─────────────────────────────────────────────
+cgroup:
+  autoMount:
+    enabled: false
+  hostRoot: /sys/fs/cgroup
+
+securityContext:
+  capabilities:
+    ciliumAgent:
+      - CHOWN
+      - KILL
+      - NET_ADMIN
+      - NET_RAW
+      - IPC_LOCK
+      - SYS_ADMIN
+      - SYS_RESOURCE
+      - DAC_OVERRIDE
+      - FOWNER
+      - SETGID
+      - SETUID
+    cleanCiliumState:
+      - NET_ADMIN
+      - SYS_ADMIN
+      - SYS_RESOURCE

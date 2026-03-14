@@ -1,0 +1,11 @@
+---
+apiVersion: cilium.io/v2alpha1
+kind: CiliumL2AnnouncementPolicy
+metadata:
+  name: dmz-l2-policy
+spec:
+  # Match le sub-interface VLAN 6 (enp1s0.6 sui CP, bond0.6 sui worker)
+  interfaces:
+    - ^.+\.6$
+  externalIPs: true
+  loadBalancerIPs: true

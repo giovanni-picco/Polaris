@@ -1,0 +1,157 @@
+---
+clusterName: POLARIS
+talosVersion: v1.12.5
+kubernetesVersion: v1.35.2
+
+endpoint: https://kube.polarislab.dev:6443
+
+additionalApiServerCertSans:
+  - kube.polarislab.dev
+  - 10.10.5.10
+
+additionalMachineCertSans:
+  - kube.polarislab.dev
+  - 10.10.5.10
+  # Controlplane
+  - 10.10.5.11
+  - 10.10.5.12
+  - 10.10.5.13
+  # Worker
+  - 10.10.5.14
+  - 10.10.5.15
+
+cniConfig:
+  name: none
+
+nodes:
+  # ─────────────────────────────────────────────
+  # CONTROLPLANE 1 — PCP-01 (HP ProDesk 400 G2)
+  # ─────────────────────────────────────────────
+  - hostname: PCP-01
+    ipAddress: 10.10.5.11
+    controlPlane: true
+    installDisk: /dev/sda
+    networkInterfaces:
+      - interface: enp1s0
+        dhcp: true
+        vip:
+          ip: 10.10.5.10
+        vlans:
+          - vlanId: 6
+            dhcp: true
+
+  # ─────────────────────────────────────────────
+  # CONTROLPLANE 2 — PCP-02 (HP ProDesk 400 G2)
+  # ─────────────────────────────────────────────
+  - hostname: PCP-02
+    ipAddress: 10.10.5.12
+    controlPlane: true
+    installDisk: /dev/sda
+    networkInterfaces:
+      - interface: enp1s0
+        dhcp: true
+        vip:
+          ip: 10.10.5.10
+        vlans:
+          - vlanId: 6
+            dhcp: true
+
+  # ─────────────────────────────────────────────
+  # CONTROLPLANE 3 — PCP-03 (HP ProDesk 400 G2)
+  # ─────────────────────────────────────────────
+  - hostname: PCP-03
+    ipAddress: 10.10.5.13
+    controlPlane: true
+    installDisk: /dev/sda
+    networkInterfaces:
+      - interface: enp1s0
+        dhcp: true
+        vip:
+          ip: 10.10.5.10
+        vlans:
+          - vlanId: 6
+            dhcp: true
+
+  # ─────────────────────────────────────────────
+  # WORKER 1 — PWR-01 (Minisforum MS-01)
+  # ─────────────────────────────────────────────
+  - hostname: PWR-01
+    ipAddress: 10.10.5.14
+    controlPlane: false
+    installDisk: /dev/nvme0n1
+    networkInterfaces:
+      - interface: bond0
+        dhcp: true
+        bond:
+          mode: 802.3ad
+          miimon: 100
+          updelay: 200
+          downdelay: 200
+          lacpRate: fast
+          interfaces:
+            - enp87s0
+            - enp89s0
+        vlans:
+          - vlanId: 6
+            dhcp: true
+
+  # ─────────────────────────────────────────────
+  # WORKER 2 — PWR-02 (Minisforum MS-01)
+  # ─────────────────────────────────────────────
+  - hostname: PWR-02
+    ipAddress: 10.10.5.15
+    controlPlane: false
+    installDisk: /dev/nvme0n1
+    networkInterfaces:
+      - interface: bond0
+        dhcp: true
+        bond:
+          mode: 802.3ad
+          miimon: 100
+          updelay: 200
+          downdelay: 200
+          lacpRate: fast
+          interfaces:
+            - enp87s0
+            - enp89s0
+        vlans:
+          - vlanId: 6
+            dhcp: true
+
+# ─────────────────────────────────────────────
+# PATCH CONTROLPLANE
+# ─────────────────────────────────────────────
+controlPlane:
+  machineSpec:
+    secureboot: true
+  schematic:
+    customization:
+      systemExtensions:
+        officialExtensions:
+          - siderolabs/i915
+          - siderolabs/iscsi-tools
+      
+  patches:
+    - |-
+      cluster:
+        allowSchedulingOnControlPlanes: true
+        proxy:
+          disabled: true
+
+# ─────────────────────────────────────────────
+# PATCH WORKER
+# ─────────────────────────────────────────────
+worker:
+  machineSpec:
+    secureboot: true
+  schematic:
+    customization:
+      systemExtensions:
+        officialExtensions:
+          - siderolabs/i915
+          - siderolabs/iscsi-tools
+  patches:
+    - |-
+      machine:
+        nodeLabels:
+          node-role/worker: "true"
