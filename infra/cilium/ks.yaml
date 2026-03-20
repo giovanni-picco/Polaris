@@ -1,0 +1,14 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: infra-cilium
+  namespace: flux-system
+spec:
+  interval: 5m
+  path: ./polaris
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: cilium
+  dependsOn:
+    - name: config
