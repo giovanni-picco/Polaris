@@ -1,0 +1,13 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: external-secrets
+  namespace: flux-system
+spec:
+  interval: 1m0s
+  url: https://github.com/giovanni-picco/polaris.git
+  ref:
+    branch: main
+  secretRef:
+    name: gitlab-deploy-token
