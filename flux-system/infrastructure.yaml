@@ -11,4 +11,4 @@ spec:
   path: ./infrastructure
   prune: true
   dependsOn:
-  - name: cluster-config
+  - name: config
