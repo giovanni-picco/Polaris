@@ -1,4 +1,7 @@
----
 creation_rules:
-  - age: >-
-      age15n60jma8mrj5h7sqnal4lvlsn9usd0ceju0ked4t0mgewt8n6c7qtezm3d
+  - path_regex: .*\.secrets\.ya?ml$
+    encrypted_regex: ^(data|stringData)$
+    age: age15n60jma8mrj5h7sqnal4lvlsn9usd0ceju0ked4t0mgewt8n6c7qtezm3d
+  - path_regex: .*\.sops\.ya?ml$
+    encrypted_regex: ^(data|stringData)$
+    age: age15n60jma8mrj5h7sqnal4lvlsn9usd0ceju0ked4t0mgewt8n6c7qtezm3d
