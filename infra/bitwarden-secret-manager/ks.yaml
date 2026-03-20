@@ -12,7 +12,7 @@ spec:
     name: bitwarden-secret-manager
   dependsOn:
     - name: config
-    - name: external-secrets
+    - name: infra-external-secrets
   substituteFrom:
     - kind: Secret
       name: bitwarden
