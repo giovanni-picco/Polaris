@@ -4,4 +4,4 @@ resources:
 - gotk-components.yaml
 - gotk-sync.yaml
 - config.yaml
-- infrastructure.yaml
+- infra.yaml
