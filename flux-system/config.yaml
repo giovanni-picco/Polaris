@@ -10,8 +10,6 @@ spec:
     name: flux-system
   path: ./config
   prune: true
-  dependsOn:
-    - name: flux-system 
   decryption:
     provider: sops
     secretRef:
