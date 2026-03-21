@@ -4,5 +4,4 @@ resources:
   - ./cilium
   - ./cert-manager
   - ./external-secrets
-  - ./bitwarden-sdk-server
   - ./bitwarden-secret-manager
