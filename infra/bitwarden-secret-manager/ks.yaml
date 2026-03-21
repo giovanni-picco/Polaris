@@ -12,7 +12,7 @@ spec:
     name: bitwarden-secret-manager
   dependsOn:
     - name: config
-    - name: cert-manager
+    - name: infra-cert-manager
     - name: infra-external-secrets
   postBuild:
     substituteFrom:
