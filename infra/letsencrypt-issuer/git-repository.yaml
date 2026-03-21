@@ -1,0 +1,13 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: letsencrypt-issuer
+  namespace: flux-system
+spec:
+  interval: 1m0s
+  url: https://gitlab.com/gp-homelab/k8s/letsencrypt-issuer.git
+  ref:
+    branch: main
+  secretRef:
+    name: gitlab-deploy-token
