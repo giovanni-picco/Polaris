@@ -6,3 +6,4 @@ resources:
   - ./external-secrets
   - ./bitwarden-secret-manager
   - ./letsencrypt-issuer
+  - ./traefik
