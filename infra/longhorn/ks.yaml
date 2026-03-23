@@ -12,6 +12,8 @@ spec:
     name: longhorn
   dependsOn:
     - name: config
+    - name: infra-cilium
+    - name: infra-traefik
   postBuild:
     substituteFrom:
       - kind: ConfigMap
