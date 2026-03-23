@@ -7,3 +7,4 @@ resources:
   - ./bitwarden-secret-manager
   - ./letsencrypt-issuer
   - ./traefik
+  - ./longhorn
