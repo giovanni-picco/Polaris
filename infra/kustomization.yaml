@@ -8,3 +8,4 @@ resources:
   - ./letsencrypt-issuer
   - ./traefik
   - ./longhorn
+  - ./node-feature-discovery
