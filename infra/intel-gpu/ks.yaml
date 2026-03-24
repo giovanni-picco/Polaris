@@ -1,0 +1,14 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: infra-intel-gpu
+  namespace: flux-system
+spec:
+  interval: 5m
+  path: ./polaris
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: intel-gpu
+  dependsOn:
+    - name: infra-node-feature-discovery

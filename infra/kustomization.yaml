@@ -9,3 +9,4 @@ resources:
   - ./traefik
   - ./longhorn
   - ./node-feature-discovery
+  - ./intel-gpu
