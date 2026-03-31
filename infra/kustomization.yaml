@@ -11,3 +11,4 @@ resources:
   - ./volume-backups
   - ./node-feature-discovery
   - ./intel-gpu
+  - ./external-dns

@@ -1,0 +1,19 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: infra-external-dns
+  namespace: flux-system
+spec:
+  interval: 5m
+  path: ./polaris
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: external-dns
+  dependsOn:
+    - name: infra-cilium
+    - name: infra-external-secrets
+  postBuild:
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-vars
