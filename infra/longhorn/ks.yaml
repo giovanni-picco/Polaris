@@ -5,7 +5,7 @@ metadata:
   namespace: flux-system
 spec:
   interval: 5m
-  path: ./polaris
+  path: ./app/polaris
   prune: true
   sourceRef:
     kind: GitRepository

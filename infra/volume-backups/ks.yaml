@@ -5,8 +5,10 @@ metadata:
   namespace: flux-system
 spec:
   interval: 5m
-  path: ./polaris
+  path: ./backups/polaris
   prune: true
   sourceRef:
     kind: GitRepository
-    name: volume-backups
+    name: longhorn
+  dependsOn:
+    - name: infra-longhorn
