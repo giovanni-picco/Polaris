@@ -11,8 +11,7 @@ spec:
     kind: GitRepository
     name: external-dns
   dependsOn:
-    - name: infra-cilium
-    - name: infra-external-secrets
+    - name: infra-bitwarden-secret-manager
   postBuild:
     substituteFrom:
       - kind: ConfigMap

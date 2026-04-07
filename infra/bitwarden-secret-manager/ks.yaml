@@ -11,6 +11,7 @@ spec:
     kind: GitRepository
     name: external-secrets
   dependsOn:
+    - name: infra-cert-manager
     - name: infra-external-secrets
   postBuild:
     substituteFrom:
