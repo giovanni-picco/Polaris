@@ -5,11 +5,11 @@ metadata:
   namespace: flux-system
 spec:
   interval: 5m
-  path: ./polaris
+  path: ./letsencrypt-issuer/polaris
   prune: true
   sourceRef:
     kind: GitRepository
-    name: letsencrypt-issuer
+    name: cert-manager
   dependsOn:
     - name: infra-cert-manager
     - name: infra-external-secrets
