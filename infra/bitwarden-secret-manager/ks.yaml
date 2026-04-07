@@ -5,11 +5,11 @@ metadata:
   namespace: flux-system
 spec:
   interval: 5m
-  path: ./polaris
+  path: ./bitwarden/polaris
   prune: true
   sourceRef:
     kind: GitRepository
-    name: bitwarden-secret-manager
+    name: external-secrets
   dependsOn:
     - name: infra-external-secrets
   postBuild:
