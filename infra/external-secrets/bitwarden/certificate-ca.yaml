@@ -3,8 +3,6 @@ kind: Certificate
 metadata:
   name: bitwarden-bootstrap-certificate
   namespace: cert-manager
-  annotations:
-    kustomize.toolkit.fluxcd.io/prune: disabled
 spec:
   commonName: cert-manager-bitwarden-tls
   isCA: true
