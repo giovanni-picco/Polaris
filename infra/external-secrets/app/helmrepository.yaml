@@ -3,6 +3,8 @@ kind: HelmRepository
 metadata:
   name: external-secrets
   namespace: flux-system
+  annotations:
+    kustomize.toolkit.fluxcd.io/prune: disabled
 spec:
   interval: 24h
   url: https://charts.external-secrets.io
