@@ -1,0 +1,144 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: authentik
+  namespace: authentik
+spec:
+  interval: 10m
+  chart:
+    spec:
+      chart: authentik
+      version: "2025.12.4"
+      sourceRef:
+        kind: HelmRepository
+        name: authentik
+        namespace: authentik
+  install:
+    remediation:
+      retries: 5
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    authentik:
+      error_reporting:
+        enabled: true
+      email:
+        host: "smtp-relay.brevo.com"
+        port: 587
+        timeout: 30
+        from: "no_reply@${CLUSTER_DOMAIN}"
+    global:
+      env:
+        - name: AUTHENTIK_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: secret-key-cred
+              key: secret_key
+        - name: AUTHENTIK_POSTGRESQL__PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: database-cred
+              key: password
+        - name: AUTHENTIK_EMAIL__USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: smtp-cred
+              key: username
+        - name: AUTHENTIK_EMAIL__PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: smtp-cred
+              key: password
+    server:
+      name: server
+      replicas: 1
+      ingress:
+        enabled: true
+        ingressClassName: cilium
+        annotations:
+          cert-manager.io/cluster-issuer: letsencrypt
+          external-dns.alpha.kubernetes.io/hostname: sso.${CLUSTER_DOMAIN}
+        hosts:
+          - sso.${CLUSTER_DOMAIN}
+        tls:
+          - hosts:
+              - sso.${CLUSTER_DOMAIN}
+            secretName: authentik-tls
+        https: false
+      resources:
+        requests:
+          cpu: 500m
+          memory: 1G
+        limits:
+          cpu: 1500m
+          memory: 2Gi
+      metrics:
+        enabled: true
+        resources:
+          requests:
+            cpu: 10m
+            memory: 32Mi
+          limits:
+            cpu: 100m
+            memory: 64Mi
+    worker:
+      name: worker
+      replicas: 1
+      metrics:
+        enabled: true
+        resources:
+          requests:
+            cpu: 10m
+            memory: 32Mi
+          limits:
+            cpu: 100m
+            memory: 64Mi
+      resources:
+        requests:
+          cpu: 500m
+          memory: 2G
+        limits:
+          cpu: 1500m
+          memory: 3Gi
+    postgresql:
+      enabled: true
+      image:
+        tag: latest
+      auth:
+        username: authentik
+        database: authentik
+        existingSecret: database-cred
+        secretKeys:
+          adminPasswordKey: postgres-password
+          userPasswordKey: password
+      primary:
+        name: master
+        persistence:
+          enabled: true
+          annotations:
+            recurring-job-group.longhorn.io/critical: enabled
+          storageClass: longhorn
+          size: 20Gi
+        persistentVolumeClaimRetentionPolicy:
+          enabled: true
+          whenScaled: Retain
+          whenDeleted: Retain
+        resources:
+          limits:
+            cpu: 750m
+            memory: 2Gi
+      readReplicas:
+        resources:
+          limits:
+            cpu: 500m
+            memory: 1Gi
+      metrics:
+        enabled: true
+        image:
+          tag: latest
+        resources:
+          limits:
+            cpu: 100m
+            memory: 128Mi

@@ -4,11 +4,5 @@ resources:
   - ./cilium
   - ./cert-manager
   - ./external-secrets
-  - ./bitwarden-secret-manager
-  - ./letsencrypt-issuer
-  - ./traefik
-  - ./longhorn
-  - ./volume-backups
-  - ./node-feature-discovery
+  - ./nfd
   - ./intel-gpu
-  - ./external-dns

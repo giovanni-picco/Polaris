@@ -1,0 +1,39 @@
+---
+apiVersion: longhorn.io/v1beta2
+kind: RecurringJob
+metadata:
+  name: critical-snapshot
+  namespace: longhorn-system
+spec:
+  cron: "0 0,6,12,18 * * *"
+  task: "snapshot"
+  groups:
+    - "critical"
+  retain: 8
+  concurrency: 2
+---
+apiVersion: longhorn.io/v1beta2
+kind: RecurringJob
+metadata:
+  name: default-snapshot
+  namespace: longhorn-system
+spec:
+  cron: "0 8,20 * * *"
+  task: "snapshot"
+  groups:
+    - "default"
+  retain: 4
+  concurrency: 2
+---
+apiVersion: longhorn.io/v1beta2
+kind: RecurringJob
+metadata:
+  name: volatile-snapshot
+  namespace: longhorn-system
+spec:
+  cron: "0 8 * * *"
+  task: "snapshot"
+  groups:
+    - "ephemeral"
+  retain: 2
+  concurrency: 2
