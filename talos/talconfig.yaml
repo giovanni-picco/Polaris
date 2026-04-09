@@ -1,6 +1,6 @@
 ---
 clusterName: POLARIS
-talosVersion: v1.12.5
+talosVersion: v1.12.6
 kubernetesVersion: v1.35.2
 
 endpoint: https://kube.polarislab.dev:6443
