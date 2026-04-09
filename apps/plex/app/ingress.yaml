@@ -11,7 +11,7 @@ spec:
   tls:
     - hosts:
         - plex.${CLUSTER_DOMAIN}
-      secretName: authentik-tls
+      secretName: plex-tls
   rules:
     - host: plex.${CLUSTER_DOMAIN}
       http:
