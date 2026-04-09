@@ -22,6 +22,11 @@ l2announcements:
 externalIPs:
   enabled: true
 
+ingressController:
+  enabled: true
+  default: true
+  loadbalancerMode: shared
+
 # ─────────────────────────────────────────────
 # Talos-specific
 # ─────────────────────────────────────────────
