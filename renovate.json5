@@ -1,0 +1,30 @@
+{
+        "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+        "extends": [
+                "config:recommended"
+        ],
+        "dependencyDashboardTitle": "Renovate Dashboard 🤖",
+        "suppressNotifications": [
+                "prEditedNotification",
+                "prIgnoreNotification"
+        ],
+        "ignorePaths": [
+                "talos/**",
+                "config/**"
+        ],
+        "flux": {
+                "managerFilePatterns": [
+                        "/\\.yaml(?:\\.j2)?$/"
+                ]
+        },
+        "helm-values": {
+                "managerFilePatterns": [
+                        "/\\.yaml(?:\\.j2)?$/"
+                ]
+        },
+        "kubernetes": {
+                "managerFilePatterns": [
+                        "/\\.yaml(?:\\.j2)?$/"
+                ]
+        }
+}
