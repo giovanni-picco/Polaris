@@ -1,0 +1,166 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: qbittorrent
+  namespace: arr-stack
+  labels:
+    app: qbittorrent
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: qbittorrent
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: qbittorrent
+    spec:
+      containers:
+        - name: gluetun
+          image: qmcgaw/gluetun:v3.41.1
+          securityContext:
+            privileged: true
+            capabilities:
+              add: ["NET_ADMIN"]
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+            - name: tcp-shadowsocks
+              containerPort: 6881
+              protocol: TCP
+            - name: udp-shadowsocks
+              containerPort: 6881
+              protocol: UDP
+          envFrom:
+            - configMapRef:
+                name: gluetun-configmap
+          env:
+            - name: VPN_TYPE
+              value: "openvpn"
+            - name: OPENVPN_USER
+              valueFrom:
+                secretKeyRef:
+                  name: gluetun-secret
+                  key: OPENVPN_USER
+            - name: OPENVPN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: gluetun-secret
+                  key: OPENVPN_PASSWORD
+            - name: FIREWALL_INPUT_PORTS
+              value: "8080,6881"
+          restartPolicy: Always
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - "ping -c 1 google.it"
+            initialDelaySeconds: 5
+            periodSeconds: 3
+            timeoutSeconds: 2
+            failureThreshold: 3
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - "ping -c 1 google.it"
+            initialDelaySeconds: 10
+            periodSeconds: 15
+            timeoutSeconds: 2
+            failureThreshold: 3
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
+            limits:
+              memory: "256Mi"
+              cpu: "200m"
+        - name: qbittorrent
+          image: lscr.io/linuxserver/qbittorrent:5.1.4
+          env:
+            - name: TZ
+              value: Europe/Rome
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+            - name: WEBUI_PORT
+              value: "8080"
+          ports:
+            - name: http
+              protocol: TCP
+              containerPort: 8080
+          volumeMounts:
+            - name: qbittorrent-config
+              mountPath: /config
+            - name: media-torrents
+              mountPath: /data/torrents
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "2Gi"
+              cpu: "500m"
+      volumes:
+        - name: qbittorrent-config
+          persistentVolumeClaim:
+            claimName: pvc-config-qbittorrent
+        - name: media-torrents
+          persistentVolumeClaim:
+            claimName: pvc-media-torrents
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: qbittorrent
+  namespace: arr-stack
+spec:
+  selector:
+    app: qbittorrent
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+  type: ClusterIP
+
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: qbittorrent-cert
+  namespace: arr-stack
+spec:
+  secretName: qbittorrent-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+    - qbittorrent.${CLUSTER_DOMAIN}
+
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: qbittorrent
+  namespace: arr-stack
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`qbittorrent.${CLUSTER_DOMAIN}`)
+      kind: Rule
+      # middlewares:
+      #   - name: authentik
+      services:
+        - name: qbittorrent
+          port: 8080
+  tls:
+    secretName: qbittorrent-tls
