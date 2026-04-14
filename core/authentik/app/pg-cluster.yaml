@@ -1,0 +1,27 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: authentik-pg
+  namespace: authentik
+spec:
+  instances: 3
+  imageName: ghcr.io/cloudnative-pg/postgresql:17.9
+  primaryUpdateStrategy: unsupervised
+  bootstrap:
+    initdb:
+      database: authentik
+      owner: authentik
+  storage:
+    size: 20Gi
+    storageClass: longhorn
+    pvcTemplate:
+       metadata:
+         labels:
+           recurring-job-group.longhorn.io/critical: enabled
+  resources:
+    requests:
+      cpu: 500m 
+      memory: 1Gi
+    limits:
+      cpu: 750m
+      memory: 2Gi

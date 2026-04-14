@@ -5,3 +5,4 @@ resources:
   - ./helmrepository.yaml
   - ./helmrelease.yaml
   - ./external-secrets.yaml
+  - ./pg-cluster.yaml
