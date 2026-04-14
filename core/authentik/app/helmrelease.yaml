@@ -36,10 +36,15 @@ spec:
             secretKeyRef:
               name: secret-key-cred
               key: secret_key
+        - name: AUTHENTIK_POSTGRESQL__HOST
+          valueFrom:
+            secretKeyRef:
+              name: authentik-pg-app
+              key: host
         - name: AUTHENTIK_POSTGRESQL__PASSWORD
           valueFrom:
             secretKeyRef:
-              name: database-cred
+              name: authentik-app
               key: password
         - name: AUTHENTIK_EMAIL__USERNAME
           valueFrom:
@@ -102,43 +107,3 @@ spec:
         limits:
           cpu: 1500m
           memory: 3Gi
-    postgresql:
-      enabled: true
-      image:
-        tag: latest
-      auth:
-        username: authentik
-        database: authentik
-        existingSecret: database-cred
-        secretKeys:
-          adminPasswordKey: postgres-password
-          userPasswordKey: password
-      primary:
-        name: master
-        persistence:
-          enabled: true
-          annotations:
-            recurring-job-group.longhorn.io/critical: enabled
-          storageClass: longhorn
-          size: 20Gi
-        persistentVolumeClaimRetentionPolicy:
-          enabled: true
-          whenScaled: Retain
-          whenDeleted: Retain
-        resources:
-          limits:
-            cpu: 750m
-            memory: 2Gi
-      readReplicas:
-        resources:
-          limits:
-            cpu: 500m
-            memory: 1Gi
-      metrics:
-        enabled: true
-        image:
-          tag: latest
-        resources:
-          limits:
-            cpu: 100m
-            memory: 128Mi

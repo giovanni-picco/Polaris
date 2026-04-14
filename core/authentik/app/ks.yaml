@@ -10,6 +10,8 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
+  dependsOn:
+    - name: core-cnpg
   postBuild:
     substituteFrom:
       - kind: ConfigMap
