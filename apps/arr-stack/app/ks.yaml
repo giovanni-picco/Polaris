@@ -9,7 +9,7 @@ spec:
   prune: true
   sourceRef:
     kind: GitRepository
-    name: arr-stack
+    name: flux-system
   postBuild:
     substituteFrom:
       - kind: ConfigMap
