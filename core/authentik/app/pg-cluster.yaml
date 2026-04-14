@@ -14,10 +14,6 @@ spec:
   storage:
     size: 20Gi
     storageClass: longhorn
-    pvcTemplate:
-       metadata:
-         labels:
-           recurring-job-group.longhorn.io/critical: enabled
   resources:
     requests:
       cpu: 500m 
