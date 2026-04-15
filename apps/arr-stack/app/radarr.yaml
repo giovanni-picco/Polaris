@@ -63,35 +63,28 @@ spec:
   type: ClusterIP
 
 ---
-apiVersion: cert-manager.io/v1
-kind: Certificate
-metadata:
-  name: radarr-cert
-  namespace: arr-stack
-spec:
-  secretName: radarr-tls
-  issuerRef:
-    name: letsencrypt-prod
-    kind: ClusterIssuer
-  dnsNames:
-    - radarr.${CLUSTER_DOMAIN}
-
----
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
+apiVersion: networking.k8s.io/v1
+kind: Ingress
 metadata:
   name: radarr
-  namespace: arr-stack
+  namespace: radarr
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+    external-dns.alpha.kubernetes.io/hostname: radarr.${CLUSTER_DOMAIN}
 spec:
-  entryPoints:
-    - websecure
-  routes:
-    - match: Host(`radarr.${CLUSTER_DOMAIN}`)
-      kind: Rule
-      # middlewares:
-      #   - name: authentik
-      services:
-        - name: radarr
-          port: 7878
+  ingressClassName: cilium
   tls:
-    secretName: radarr-tls
+    - hosts:
+        - radarr.${CLUSTER_DOMAIN}
+      secretName: radarr-tls
+  rules:
+    - host: radarr.${CLUSTER_DOMAIN}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: radarr
+                port:
+                  number: 7878

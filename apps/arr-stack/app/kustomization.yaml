@@ -4,7 +4,6 @@ resources:
 - ./namespace.yaml
 - ./gluetun-configmap.yaml
 - ./pv-pvc.yaml
-- ./middleware.yaml
 - ./qbittorrent.yaml
 - ./prowlarr.yaml
 - ./radarr.yaml

@@ -132,35 +132,28 @@ spec:
   type: ClusterIP
 
 ---
-apiVersion: cert-manager.io/v1
-kind: Certificate
-metadata:
-  name: qbittorrent-cert
-  namespace: arr-stack
-spec:
-  secretName: qbittorrent-tls
-  issuerRef:
-    name: letsencrypt-prod
-    kind: ClusterIssuer
-  dnsNames:
-    - qbittorrent.${CLUSTER_DOMAIN}
-
----
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
+apiVersion: networking.k8s.io/v1
+kind: Ingress
 metadata:
   name: qbittorrent
-  namespace: arr-stack
+  namespace: qbittorrent
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+    external-dns.alpha.kubernetes.io/hostname: qbittorrent.${CLUSTER_DOMAIN}
 spec:
-  entryPoints:
-    - websecure
-  routes:
-    - match: Host(`qbittorrent.${CLUSTER_DOMAIN}`)
-      kind: Rule
-      # middlewares:
-      #   - name: authentik
-      services:
-        - name: qbittorrent
-          port: 8080
+  ingressClassName: cilium
   tls:
-    secretName: qbittorrent-tls
+    - hosts:
+        - qbittorrent.${CLUSTER_DOMAIN}
+      secretName: qbittorrent-tls
+  rules:
+    - host: qbittorrent.${CLUSTER_DOMAIN}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: qbittorrent
+                port:
+                  number: 8080
