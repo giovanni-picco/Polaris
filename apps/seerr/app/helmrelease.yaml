@@ -26,7 +26,7 @@ spec:
         cert-manager.io/cluster-issuer: letsencrypt
         external-dns.alpha.kubernetes.io/hostname: seerr.${CLUSTER_DOMAIN}
       hosts:
-        - seerr.${CLUSTER_DOMAIN}
+        - host: seerr.${CLUSTER_DOMAIN}
       tls:
         - hosts:
             - seerr.${CLUSTER_DOMAIN}
