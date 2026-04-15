@@ -5,7 +5,7 @@ metadata:
   namespace: flux-system
 spec:
   interval: 5m
-  path: ./apps/arr-stack
+  path: ./apps/arr-stack/app
   prune: true
   sourceRef:
     kind: GitRepository
