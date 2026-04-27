@@ -40,17 +40,14 @@ spec:
                 name: gluetun-configmap
           env:
             - name: VPN_TYPE
-              value: "openvpn"
-            - name: OPENVPN_USER
+              value: "wireguard"
+            - name: WIREGUARD_ADDRESSES
+              value: "10.5.0.2/32"
+            - name: WIREGUARD_PRIVATE_KEY
               valueFrom:
                 secretKeyRef:
                   name: gluetun-secret
-                  key: OPENVPN_USER
-            - name: OPENVPN_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: gluetun-secret
-                  key: OPENVPN_PASSWORD
+                  key: WIREGUARD_SECRET
             - name: FIREWALL_INPUT_PORTS
               value: "8080,6881"
           restartPolicy: Always
