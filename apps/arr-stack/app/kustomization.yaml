@@ -5,6 +5,7 @@ resources:
 - ./gluetun-configmap.yaml
 - ./pv-pvc.yaml
 - ./qbittorrent.yaml
+- ./deluge.yaml
 - ./prowlarr.yaml
 - ./radarr.yaml
 - ./sonarr.yaml
