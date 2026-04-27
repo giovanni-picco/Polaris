@@ -29,7 +29,7 @@ spec:
             - name: PGID
               value: "1000"
             - name: DELUGE_LOGLEVEL
-              value: "debug"
+              value: "info"
           ports:
             - name: http
               protocol: TCP
