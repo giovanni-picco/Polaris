@@ -6,4 +6,5 @@ resources:
 - ./helmrepository.yaml
 - ./ks.yaml
 - ./kustomization.yaml
+- ./namespace.yaml
 - ./pv-pvc.yaml
