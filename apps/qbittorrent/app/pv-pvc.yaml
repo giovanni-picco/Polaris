@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: pvc-config-qbittorrent
+  name: qbittorrent
   namespace: qbittorrent
 spec:
   accessModes:
