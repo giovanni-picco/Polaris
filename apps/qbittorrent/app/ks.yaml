@@ -1,11 +1,11 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: apps-qbittorent
+  name: apps-qbittorrent
   namespace: flux-system
 spec:
   interval: 5m
-  path: ./apps/qbittorent/app
+  path: ./apps/qbittorrent/app
   prune: true
   sourceRef:
     kind: GitRepository
