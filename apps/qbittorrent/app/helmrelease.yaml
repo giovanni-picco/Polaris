@@ -13,7 +13,7 @@ spec:
   dependsOn: []
   values:
     controllers:
-      qbittorrent-vpn:
+      qbittorrent:
         pod:
           securityContext:
             fsGroup: 1000
