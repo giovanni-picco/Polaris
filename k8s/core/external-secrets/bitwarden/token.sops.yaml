@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Secret
+metadata:
+    name: bitwarden-token
+    namespace: external-secrets
+type: Opaque
+stringData:
+    token: ENC[AES256_GCM,data:W/bxPiaBB9tWEJJo/ofW2fKyIlmAZvb334npzpXghh2y9dbC224EYLgA6/hNpvteRDX76UZfvCvetfCEgAXora2StqJxil0ENAvuh6+YRbhM962D4D2p+5iSa+MQlQ==,iv:iBjxYh/9lvSoaavYQ4k0fE5r4FDYRZUSq2pxkPJteK8=,tag:x6IflWb6o3je2u5VTs25kQ==,type:str]
+sops:
+    age:
+        - recipient: age15n60jma8mrj5h7sqnal4lvlsn9usd0ceju0ked4t0mgewt8n6c7qtezm3d
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBsWGUwSFFyUUg1NzVBdW9F
+            SnBiaUtmVSs5OFJzYzNpQmhYYzgwZUwzV0NzCkQ2WlplWm9xUFVYMDdMOXFaaE5T
+            Q1BIQmFFbnJxa0tpdlF2N2w3a2JuekUKLS0tIDRqQ3FQdHFWSjE0anZ1WFUycTNR
+            VmYzRnBvVGhqNjd0ZlYwUVZoL1JnYkEK+A+k0/oKo5CP+ZjW4JFSfP/n4VZyZ//j
+            dyc5jrXi5hsuOF4XWQ1ZYa1fgbZe4kCFOxNnWepekhjchadXrlH4rw==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2026-05-03T17:27:02Z"
+    mac: ENC[AES256_GCM,data:gFevMEQu6+Doi29UX1+zZf/sjkp7gVWbTwTw9fnUTpcagzqWihabXHoh+jSNx9nWjFMRjwUDKehnWBT4C39PMOP8HffDhIF+Yxr7dTcWjQviDvSp9EIzDSrKWYW/5nj0miBfRaUPXpI+eopg/vdZfcN6MSsK9nvnsOK2czXcrK0=,iv:G+1R4qk0voVy2t60F2Tdx5GFZO5pCs8w4N4zxjlvVEI=,tag:5U8/xuZ0aalksFWiUQQT3Q==,type:str]
+    encrypted_regex: ^(data|stringData)$
+    version: 3.12.2

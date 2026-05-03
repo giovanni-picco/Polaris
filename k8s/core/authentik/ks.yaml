@@ -1,0 +1,37 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: core-authentik-db
+  namespace: flux-system
+spec:
+  interval: 5m
+  path: ./k8s/core/authentik/database
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  dependsOn:
+    - name: core-cnpg
+  postBuild:
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-config
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: core-authentik-app
+  namespace: flux-system
+spec:
+  interval: 5m
+  path: ./k8s/core/authentik/app
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  dependsOn:
+    - name: core-authentik-db
+  postBuild:
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-config

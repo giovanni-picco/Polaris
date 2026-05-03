@@ -1,0 +1,40 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: core-external-secrets-app
+  namespace: flux-system
+spec:
+  interval: 5m
+  path: ./k8s/core/external-secrets/app
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  postBuild:
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-config
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: core-external-secrets-bitwarden
+  namespace: flux-system
+spec:
+  interval: 5m
+  path: ./k8s/core/external-secrets/bitwarden
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  dependsOn:
+    - name: core-external-secrets
+  postBuild:
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-config
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-age
