@@ -1,0 +1,43 @@
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/source.toolkit.fluxcd.io/gitrepository_v1.json
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: intel-gpu-plugin
+  namespace: flux-system
+spec:
+  interval: 1h
+  url: https://github.com/intel/intel-device-plugins-for-kubernetes
+  ref:
+    tag: v0.35.0
+  # language=gitignore
+  ignore: |
+    # exclude all
+    /*
+    # include gpu plugin
+    !/deployments/gpu_plugin
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: infra-intel-gpu-plugin
+  namespace: flux-system
+spec:
+  interval: 1h
+  path: ./deployments/gpu_plugin
+  prune: true
+  targetNamespace: intel-gpu-plugin
+  sourceRef:
+    kind: GitRepository
+    name: intel-gpu-plugin
+    namespace: flux-system
+  patches:
+    - target:
+        kind: DaemonSet
+        name: intel-gpu-plugin
+      # language=yaml
+      patch: |
+        - op: add
+          path: /spec/template/spec/containers/0/args
+          value:
+            - -shared-dev-num=5
