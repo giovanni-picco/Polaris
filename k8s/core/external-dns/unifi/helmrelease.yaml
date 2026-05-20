@@ -60,4 +60,4 @@ spec:
     sources: ["traefik-proxy","ingress", "service"]
     txtOwnerId: default
     txtPrefix: k8s.
-    domainFilters: ["${polarislab.dev}"]
+    domainFilters: ["${CLUSTER_DOMAIN}"]
