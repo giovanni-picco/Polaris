@@ -29,7 +29,7 @@ spec:
     kind: GitRepository
     name: flux-system
   dependsOn:
-    - name: core-external-secrets
+    - name: core-external-secrets-app
   postBuild:
     substituteFrom:
       - kind: ConfigMap
