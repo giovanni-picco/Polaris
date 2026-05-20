@@ -125,9 +125,9 @@ talosctl -n <NODE_IP> get disks --insecure
 
 | Node   | Interface(s)                      | Disk           |
 |--------|-----------------------------------|----------------|
-| PCP-01 | `enp1s0`                          | `/dev/sda`     |
-| PCP-02 | `enp1s0`                          | `/dev/sda`     |
-| PCP-03 | `enp1s0`                          | `/dev/sda`     |
+| PCP-01 | `enp1s0`                          | `/dev/sdb`     |
+| PCP-02 | `enp1s0`                          | `/dev/sdb`     |
+| PCP-03 | `enp1s0`                          | `/dev/sdb`     |
 | PWR-01 | `enp87s0` + `enp89s0` (LACP bond) | `/dev/nvme0n1` |
 | PWR-02 | `enp87s0` + `enp89s0` (LACP bond) | `/dev/nvme0n1` |
 
@@ -194,7 +194,7 @@ This is the only manual step outside of GitOps. Cilium must be installed before 
 
 ```sh
 helm install cilium oci://quay.io/cilium/charts/cilium \
-  --version 1.19.1 \
+  --version 1.19.4 \
   --namespace kube-system \
   --values cilium/values.yaml
 ```
@@ -210,17 +210,19 @@ kubectl get nodes -w
 ### 11. Bootstrap Flux
 
 ```sh
-flux bootstrap gitlab \
-  --owner=<GROUP> \
-  --repository=<CLUSTER_REPO> \
+flux bootstrap github \
+  --token-auth \
+  --owner=giovanni-picco \
+  --repository=Polaris \
   --branch=main \
-  --path=clusters/polaris
+  --path=k8s \
+  --personal
 ```
 
 Once Flux is running, it will reconcile all components including:
 
 - **Cilium HelmRelease** — takes over ownership from the manual install
-- **CiliumLoadBalancerIPPool** — allocates `10.10.6.128/25` for LoadBalancer Services
+- **CiliumLoadBalancerIPPool** — allocates `10.10.5.128/25` for LoadBalancer Services
 - **CiliumL2AnnouncementPolicy** — enables L2 ARP replies on VLAN 6 interfaces
 
 ### 12. Verify
