@@ -29,7 +29,7 @@ spec:
     kind: GitRepository
     name: flux-system
   dependsOn:
-    - name: infra-cert-manager
+    - name: infra-cert-manager-app
   postBuild:
     substituteFrom:
       - kind: ConfigMap
