@@ -1,6 +1,6 @@
 ---
 clusterName: POLARIS
-talosVersion: v1.13.0
+talosVersion: v1.13.2
 kubernetesVersion: v1.36.0
 
 endpoint: https://kube.polarislab.dev:6443
@@ -30,7 +30,7 @@ nodes:
   - hostname: PCP-01
     ipAddress: 10.10.5.11
     controlPlane: true
-    installDisk: /dev/sda
+    installDisk: /dev/sdb
     networkInterfaces:
       - interface: enp1s0
         dhcp: true
@@ -43,7 +43,7 @@ nodes:
   - hostname: PCP-02
     ipAddress: 10.10.5.12
     controlPlane: true
-    installDisk: /dev/sda
+    installDisk: /dev/sdb
     networkInterfaces:
       - interface: enp1s0
         dhcp: true
@@ -56,7 +56,7 @@ nodes:
   - hostname: PCP-03
     ipAddress: 10.10.5.13
     controlPlane: true
-    installDisk: /dev/sda
+    installDisk: /dev/sdb
     networkInterfaces:
       - interface: enp1s0
         dhcp: true
