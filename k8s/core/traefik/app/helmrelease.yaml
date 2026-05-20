@@ -52,10 +52,10 @@ spec:
               to: websecure
               scheme: https
               permanent: true
-      websecure:
-        http:
-          middlewares:
-            - traefik-traefik-real-ip@kubernetescrd
+      # websecure:
+      #   http:
+      #     middlewares:
+      #       - traefik-traefik-real-ip@kubernetescrd
 
     extraObjects:
       - apiVersion: traefik.io/v1alpha1
