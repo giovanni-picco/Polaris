@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: forgejo
+  namespace: forgejo
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: git.${CLUSTER_DOMAIN}
+    cert-manager.io/cluster-issuer: letsencrypt
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts:
+        - git.${CLUSTER_DOMAIN}
+      secretName: forgejo-tls
+  rules:
+    - host: git.${CLUSTER_DOMAIN}
+      http:
+        paths:
+          - backend:
+              service:
+                name: forgejo
+                port:
+                  number: 3000
+            path: /
+            pathType: Prefix

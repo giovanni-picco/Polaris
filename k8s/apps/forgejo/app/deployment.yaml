@@ -1,0 +1,108 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: forgejo
+  namespace: forgejo
+  labels:
+    app.kubernetes.io/name: forgejo
+    app.kubernetes.io/instance: forgejo
+    app.kubernetes.io/component: server
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: forgejo
+
+  template:
+    metadata:
+      labels:
+        app: forgejo
+        app.kubernetes.io/name: forgejo
+        app.kubernetes.io/instance: forgejo
+        app.kubernetes.io/component: server
+        policy-type: "app"
+
+    spec:
+      securityContext:
+        fsGroup: 1000
+
+      initContainers:
+        - name: fix-permissions
+          image: busybox:1.37
+          command: ["sh", "-c", "chown -R 1000:1000 /etc/gitea"]
+          securityContext:
+            runAsUser: 0
+          volumeMounts:
+            - mountPath: /etc/gitea
+              name: forgejo-config
+
+      containers:
+        - name: forgejo
+          image: data.forgejo.org/forgejo/forgejo:15.0.2-rootless
+
+          envFrom:
+            - configMapRef:
+                name: forgejo-config
+
+          ports:
+            - containerPort: 3000
+              name: http
+              protocol: TCP
+            - containerPort: 22
+              name: ssh
+              protocol: TCP
+
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            seccompProfile:
+              type: RuntimeDefault
+            capabilities:
+              drop:
+                - ALL
+
+          resources:
+            requests:
+              cpu: 500m
+              memory: 512Mi
+            limits:
+              cpu: 1000m
+              memory: 2Gi
+
+          livenessProbe:
+            httpGet:
+              path: /api/healthz
+              port: 3000
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+
+          readinessProbe:
+            httpGet:
+              path: /api/healthz
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+
+          volumeMounts:
+            - name: forgejo-config
+              mountPath: /etc/gitea
+            - name: forgejo-data
+              mountPath: /data
+
+      restartPolicy: Always
+
+      volumes:
+        - name: forgejo-config
+          persistentVolumeClaim:
+            claimName: forgejo-config
+        - name: forgejo-data
+          persistentVolumeClaim:
+            claimName: forgejo-data
