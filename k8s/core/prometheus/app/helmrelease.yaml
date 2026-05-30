@@ -36,7 +36,7 @@ spec:
           root_url: https://grafana.${CLUSTER_DOMAIN}
         auth:
           signout_redirect_url: https://sso.${CLUSTER_DOMAIN}/application/o/grafana/end-session/
-          # oauth_auto_login: true
+          oauth_auto_login: true
         auth.generic_oauth:
           name: Authentik
           enabled: true
