@@ -1,0 +1,142 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: kube-prometheus-stack
+  namespace: prometheus
+spec:
+  chart:
+    spec:
+      chart: kube-prometheus-stack
+      version: 86.1.0
+      reconcileStrategy: ChartVersion
+      sourceRef:
+        kind: HelmRepository
+        name: prometheus-community
+        namespace: flux-system
+  install:
+    crds: Create
+  upgrade:
+    crds: CreateReplace
+  interval: 1h
+  driftDetection:
+    mode: enabled
+    ignore:
+      # Ignore "validated" annotation which is not inserted during install
+      - target:
+          kind: PrometheusRule
+        paths:
+          - /metadata/annotations/prometheus-operator-validated
+  values:
+    grafana:
+      deploymentStrategy:
+        type: Recreate
+      defaultDashboardsTimezone: browser
+      grafana.ini:
+        server:
+          root_url: https://grafana.${CLUSTER_DOMAIN}
+        auth:
+          signout_redirect_url: https://sso.${CLUSTER_DOMAIN}/application/o/grafana/end-session/
+          oauth_auto_login: true
+        auth.generic_oauth:
+          name: Authentik
+          enabled: true
+          scopes: openid email profile offline_access
+          auth_url: https://sso.${CLUSTER_DOMAIN}/application/o/authorize/
+          token_url: https://sso.${CLUSTER_DOMAIN}/application/o/token/
+          api_url: https://sso.${CLUSTER_DOMAIN}/application/o/userinfo/
+          client_id: $__file{/etc/secrets/grafana_oauth/client_id}
+          client_secret: $__file{/etc/secrets/grafana_oauth/client_secret}
+          token_rotation_interval_minutes: "5"
+          role_attribute_path: contains(groups[*], 'admins') && 'Admin' || contains(groups[*], 'power') && 'Editor' || 'Viewer'
+      extraSecretMounts:
+        - name: grafana-oauth-secret-mount
+          secretName: grafana-oauth-secret
+          defaultMode: 0440
+          mountPath: /etc/secrets/grafana_oauth
+      ingress:
+        enabled: true
+        ingressClassName: traefik
+        annotations:
+          cert-manager.io/cluster-issuer: letsencrypt
+          external-dns.alpha.kubernetes.io/hostname: grafana.${CLUSTER_DOMAIN}
+          traefik.ingress.kubernetes.io/router.entrypoints: websecure
+        hosts:
+          - grafana.${CLUSTER_DOMAIN}
+        tls:
+          - hosts:
+              - grafana.${CLUSTER_DOMAIN}
+            secretName: grafana-tls
+        https: false
+      persistence:
+        type: pvc
+        enabled: true
+        accessModes: [ReadWriteOnce]
+        size: 10Gi
+    defaultRules:
+      disabled:
+        KubeControllerManagerDown: true
+        KubeProxyDown: true
+        KubeSchedulerDown: true
+        NodeRAIDDegraded: true
+
+    alertmanager:
+      ingress:
+        enabled: true
+        ingressClassName: traefik
+        annotations:
+          cert-manager.io/cluster-issuer: letsencrypt
+          external-dns.alpha.kubernetes.io/hostname: alertmanager.${CLUSTER_DOMAIN}
+          traefik.ingress.kubernetes.io/router.entrypoints: websecure
+        hosts:
+          - alertmanager.${CLUSTER_DOMAIN}
+        tls:
+          - hosts:
+              - alertmanager.${CLUSTER_DOMAIN}
+            secretName: alertmanager-tls
+        https: false
+      alertmanagerSpec:
+        storage:
+          volumeClaimTemplate:
+            spec:
+              accessModes: [ReadWriteOnce]
+              resources:
+                requests:
+                  storage: 10Gi
+    prometheus:
+      ingress:
+        enabled: true
+        ingressClassName: traefik
+        annotations:
+          cert-manager.io/cluster-issuer: letsencrypt
+          external-dns.alpha.kubernetes.io/hostname: prometheus.${CLUSTER_DOMAIN}
+          traefik.ingress.kubernetes.io/router.entrypoints: websecure
+        hosts:
+          - prometheus.${CLUSTER_DOMAIN}
+        tls:
+          - hosts:
+              - prometheus.${CLUSTER_DOMAIN}
+            secretName: prometheus-tls
+        https: false
+      prometheusSpec:
+        enableRemoteWriteReceiver: true
+        podMonitorSelectorNilUsesHelmValues: false
+        serviceMonitorSelectorNilUsesHelmValues: false
+        scrapeConfigSelectorNilUsesHelmValues: false
+        scrapeInterval: 30s
+        evaluationInterval: 30s
+        resources:
+          requests:
+            memory: 1Gi
+          limits:
+            memory: 2Gi
+        storageSpec:
+          volumeClaimTemplate:
+            spec:
+              accessModes: [ReadWriteOnce]
+              resources:
+                requests:
+                  storage: 25Gi
+    prometheusOperator:
+      networkPolicy:
+        enabled: true
+        flavor: cilium
