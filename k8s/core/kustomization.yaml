@@ -5,4 +5,5 @@ resources:
   - ./external-secrets
   - ./external-dns
   - ./traefik
+  - ./k8s/core/prometheus
   - ./authentik
