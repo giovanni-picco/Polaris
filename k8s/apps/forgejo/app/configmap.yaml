@@ -7,8 +7,8 @@ data:
   # ============================================================
   # Server Settings
   # ============================================================
-  FORGEJO__server__DOMAIN: forgejo.${CLUSTER_DOMAIN}
-  FORGEJO__server__ROOT_URL: https://forgejo.${CLUSTER_DOMAIN}/
+  FORGEJO__server__DOMAIN: git.${CLUSTER_DOMAIN}
+  FORGEJO__server__ROOT_URL: https://git.${CLUSTER_DOMAIN}/
   FORGEJO__server__HTTP_PORT: "3000"
   FORGEJO__server__SSH_DOMAIN: git.${CLUSTER_DOMAIN}
   FORGEJO__server__SSH_PORT: "22"
