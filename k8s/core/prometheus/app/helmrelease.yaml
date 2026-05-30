@@ -72,12 +72,6 @@ spec:
         enabled: true
         accessModes: [ReadWriteOnce]
         size: 10Gi
-    defaultRules:
-      disabled:
-        KubeControllerManagerDown: true
-        KubeProxyDown: true
-        KubeSchedulerDown: true
-        NodeRAIDDegraded: true
 
     alertmanager:
       ingress:
@@ -118,10 +112,6 @@ spec:
             secretName: prometheus-tls
         https: false
       prometheusSpec:
-        enableRemoteWriteReceiver: true
-        podMonitorSelectorNilUsesHelmValues: false
-        serviceMonitorSelectorNilUsesHelmValues: false
-        scrapeConfigSelectorNilUsesHelmValues: false
         scrapeInterval: 30s
         evaluationInterval: 30s
         resources:
