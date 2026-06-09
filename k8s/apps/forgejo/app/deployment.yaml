@@ -30,7 +30,7 @@ spec:
 
       initContainers:
         - name: fix-permissions
-          image: busybox:1.37
+          image: busybox:1.38
           command: ["sh", "-c", "chown -R 1000:1000 /etc/gitea"]
           securityContext:
             runAsUser: 0
