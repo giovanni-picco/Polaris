@@ -1,0 +1,54 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: apps-arr-stack-media
+  namespace: flux-system
+spec:
+  interval: 5m
+  path: ./k8s/apps/arr-stack/media
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  postBuild:
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-config
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: apps-arr-stack-sonarr
+  namespace: flux-system
+spec:
+  interval: 5m
+  path: ./k8s/apps/arr-stack/sonarr
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  dependsOn:
+    - name: apps-arr-stack-media
+  postBuild:
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-config
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: apps-arr-stack-radarr
+  namespace: flux-system
+spec:
+  interval: 5m
+  path: ./k8s/apps/arr-stack/radarr
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  dependsOn:
+    - name: apps-arr-stack-media
+  postBuild:
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-config
