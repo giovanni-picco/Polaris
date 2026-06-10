@@ -1,0 +1,123 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: qbittorrent
+  namespace: arr-stack
+  labels:
+    app: qbittorrent
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: qbittorrent
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: qbittorrent
+    spec:
+      initContainers:
+        - image: ghcr.io/qdm12/gluetun:v3.41.1
+          name: gluetun
+
+          imagePullPolicy: Always
+
+          securityContext:
+            capabilities:
+              add: ["NET_ADMIN"]
+
+          ports:
+            - name: http
+              protocol: TCP
+              containerPort: 8080
+
+          env:
+            - name: TZ
+              value: 'Europe/Rome'
+            - name: VPN_SERVICE_PROVIDER
+              value: "private internet access"
+            - name: VPN_TYPE
+              value: "openvpn"
+            - name: SERVER_REGIONS
+              value: "Netherlands"
+            - name: OPENVPN_USER
+              valueFrom:
+                secretKeyRef:
+                  name: qbittorrent-secrets
+                  key: pia-main-user
+            - name: OPENVPN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: qbittorrent-secrets
+                  key: pia-main-password
+            - name: FIREWALL_OUTBOUND_SUBNETS
+              value: "10.244.0.0/16,10.10.0.0/16,192.168.0.0/16"
+            - name: FIREWALL_INPUT_PORTS
+              value: "8080"
+
+          restartPolicy: Always
+
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - "ping -c 1 google.it"
+            initialDelaySeconds: 5
+            periodSeconds: 3
+            timeoutSeconds: 2
+            failureThreshold: 3
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - "ping -c 1 google.it"
+            initialDelaySeconds: 10
+            periodSeconds: 15
+            timeoutSeconds: 2
+            failureThreshold: 3
+
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
+
+      containers:
+        - name: qbittorrent
+          image: lscr.io/linuxserver/qbittorrent:5.2.1
+          env:
+            - name: TZ
+              value: Europe/Rome
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+            - name: WEBUI_PORT
+              value: "8080"
+
+          volumeMounts:
+            - name: qbittorrent-config
+              mountPath: /config
+            - name: media-torrents
+              mountPath: /data/torrents
+
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 2Gi
+
+      volumes:
+        - name: qbittorrent-config
+          persistentVolumeClaim:
+            claimName: qbittorrent-config
+        - name: media-torrents
+          persistentVolumeClaim:
+            claimName: media-torrents
