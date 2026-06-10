@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: bentopdf
+  namespace: bentopdf
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: pdf.${CLUSTER_DOMAIN}
+    cert-manager.io/cluster-issuer: letsencrypt
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts:
+        - pdf.${CLUSTER_DOMAIN}
+      secretName: bentopdf-tls
+  rules:
+    - host: pdf.${CLUSTER_DOMAIN}
+      http:
+        paths:
+          - backend:
+              service:
+                name: bentopdf
+                port:
+                  number: 3000
+            path: /
+            pathType: Prefix

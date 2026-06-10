@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bentopdf
+  namespace: bentopdf
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: bentopdf
+  template:
+    metadata:
+      labels:
+        app: bentopdf
+    spec:
+      securityContext:
+        fsGroup: 1000
+      containers:
+        - name: bentopdf
+          image: ghcr.io/alam00000/bentopdf-simple:v2.8.5
+          ports:
+            - containerPort: 3000
+              name: http
+              protocol: TCP
+
+          env:
+            - name: SIMPLE_MODE
+              value: "true"
+
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            seccompProfile:
+              type: RuntimeDefault
+            capabilities:
+              drop:
+                - ALL
+
+          resources:
+            requests:
+              cpu: 256m
+              memory: 512Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+
+      restartPolicy: Always
