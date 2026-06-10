@@ -1,0 +1,35 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: apps-n8n-db
+  namespace: flux-system
+spec:
+  interval: 5m
+  path: ./k8s/apps/n8n/database
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  postBuild:
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-config
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: apps-n8n-app
+  namespace: flux-system
+spec:
+  interval: 5m
+  path: ./k8s/apps/n8n/app
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  dependsOn:
+    - name: apps-n8n-db
+  postBuild:
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-config

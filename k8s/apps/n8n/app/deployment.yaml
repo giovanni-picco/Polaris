@@ -1,0 +1,121 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: n8n
+  namespace: n8n
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: n8n
+  template:
+    metadata:
+      labels:
+        app: n8n
+    spec:
+      securityContext:
+        fsGroup: 1000
+      containers:
+        - name: n8n
+          image: docker.n8n.io/n8nio/n8n:2.25.6
+          env:
+            # SERVER
+            - name: GENERIC_TIMEZONE
+              value: "Europe/Rome"
+            - name: TZ
+              value: "Europe/Rome"
+            - name: N8N_HOST
+              value: "n8n.${CLUSTER_DOMAIN}"
+            - name: N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS
+              value: "true"
+            - name: N8N_RUNNERS_ENABLED
+              value: "false"
+          
+            # SSO
+            - name: DB_TYPE
+              value: "postgresdb"
+            - name: DB_POSTGRESDB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: n8n-pg-app
+                  key: host          
+            - name: DB_POSTGRESDB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: n8n-pg-app
+                  key: user
+            - name: DB_POSTGRESDB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: n8n-pg-app
+                  key: password
+            
+            # SSO
+            - name: N8N_SSO_OIDC_LOGIN_ENABLED
+              value: "true"
+            - name: N8N_SSO_OIDC_DISCOVERY_ENDPOINT
+              value: "https://sso.${CLUSTER_DOMAIN}/application/o/n8n/.well-known/openid-configuration"
+            - name: N8N_SSO_OIDC_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: sso-client
+                  key: client_id
+            - name: N8N_SSO_OIDC_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: sso-client
+                  key: client_secret
+
+          ports:
+            - containerPort: 5678
+              name: http
+              protocol: TCP
+
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            seccompProfile:
+              type: RuntimeDefault
+            capabilities:
+              drop:
+                - ALL
+
+          resources:
+            requests:
+              cpu: 1000m
+              memory: 512Mi
+            limits:
+              cpu: 2000m
+              memory: 2Gi
+
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 5678
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+
+          readinessProbe:
+            httpGet:
+              path: /healthz/readiness
+              port: 5678
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+
+          volumeMounts:
+            - name: n8n-config
+              mountPath: /home/node/.n8n
+
+      restartPolicy: Always
+      volumes:
+        - name: n8n-config
+          persistentVolumeClaim:
+            claimName: n8n-config
