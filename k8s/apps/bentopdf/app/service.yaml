@@ -5,7 +5,7 @@ metadata:
   namespace: bentopdf
 spec:
   ports:
-    - port: 3000
+    - port: 8080
       name: http
   selector:
     app: bentopdf

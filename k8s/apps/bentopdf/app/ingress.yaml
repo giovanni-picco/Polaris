@@ -21,6 +21,6 @@ spec:
               service:
                 name: bentopdf
                 port:
-                  number: 3000
+                  number: 8080
             path: /
             pathType: Prefix

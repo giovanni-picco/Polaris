@@ -15,30 +15,17 @@ spec:
       labels:
         app: bentopdf
     spec:
-      securityContext:
-        fsGroup: 1000
       containers:
         - name: bentopdf
           image: ghcr.io/alam00000/bentopdf-simple:v2.8.5
           ports:
-            - containerPort: 3000
+            - containerPort: 8080
               name: http
               protocol: TCP
 
           env:
             - name: SIMPLE_MODE
               value: "true"
-
-          securityContext:
-            allowPrivilegeEscalation: false
-            runAsNonRoot: true
-            runAsUser: 1000
-            runAsGroup: 1000
-            seccompProfile:
-              type: RuntimeDefault
-            capabilities:
-              drop:
-                - ALL
 
           resources:
             requests:
@@ -48,16 +35,4 @@ spec:
               cpu: 1000m
               memory: 1Gi
 
-          volumeMounts:
-            - name: nginx-cache
-              mountPath: /var/cache/nginx
-            - name: nginx-run
-              mountPath: /var/run
-
       restartPolicy: Always
-
-      volumes:
-        - name: nginx-cache
-          emptyDir: {}
-        - name: nginx-run
-          emptyDir: {}
