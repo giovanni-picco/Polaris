@@ -30,7 +30,7 @@ spec:
           ports:
             - name: http
               protocol: TCP
-              containerPort: 8080
+              containerPort: &port 8080
 
           env:
             - name: TZ
@@ -105,6 +105,24 @@ spec:
               mountPath: /config
             - name: media-torrents
               mountPath: /data/torrents
+
+          livenessProbe:
+            httpGet:
+              path: /
+              port: *port
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+
+          readinessProbe:
+            httpGet:
+              path: /
+              port: *port
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
 
           resources:
             requests:
