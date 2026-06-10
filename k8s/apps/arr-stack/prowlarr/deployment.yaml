@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prowlarr
+  namespace: arr-stack
+  labels:
+    app: prowlarr
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prowlarr
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: prowlarr
+    spec:
+      containers:
+        - name: prowlarr
+          image: ghcr.io/linuxserver/prowlarr:2.4.0
+          env:
+            - name: TZ
+              value: "Europe/Rome"
+
+            - name: PROWLARR__AUTH__ENABLED
+              value: "true"
+            - name: PROWLARR__AUTH__METHOD
+              value: "External"
+            - name: PROWLARR__AUTH__REQUIRED
+              value: "DisabledForLocalAddresses"
+
+          ports:
+            - containerPort: &port 9696
+              name: http
+
+          volumeMounts:
+            - name: prowlarr-config
+              mountPath: /config
+
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "128Mi"
+            limits:
+              cpu: "300m"
+              memory: "512Mi"
+
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: *port
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+
+          readinessProbe:
+            httpGet:
+              path: /ping
+              port: *port
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+
+      volumes:
+        - name: prowlarr-config
+          persistentVolumeClaim:
+            claimName: prowlarr-config
