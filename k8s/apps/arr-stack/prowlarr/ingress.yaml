@@ -4,7 +4,7 @@ metadata:
   name: prowlarr
   namespace: arr-stack
   annotations:
-    external-dns.alpha.kubernetes.io/hostname: &domain prowlarr.k8s.${CLUSTER_DOMAIN}
+    external-dns.alpha.kubernetes.io/hostname: &domain prowlarr.${CLUSTER_DOMAIN}
     cert-manager.io/cluster-issuer: letsencrypt
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
     traefik.ingress.kubernetes.io/router.middlewares: arr-stack-authentik@kubernetescrd
