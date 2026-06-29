@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: jellyfin
+  namespace: jellyfin
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: &domain jellyfin.${CLUSTER_DOMAIN}
+    cert-manager.io/cluster-issuer: letsencrypt
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts:
+        - *domain
+      secretName: seerr-tls
+  rules:
+    - host: *domain
+      http:
+        paths:
+          - backend:
+              service:
+                name: jellyfin
+                port:
+                  number: 8096
+            path: /
+            pathType: Prefix
