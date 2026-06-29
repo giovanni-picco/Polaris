@@ -1,0 +1,90 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mealie
+  namespace: mealie
+  labels:
+    app: mealie
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mealie
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: mealie
+    spec:
+      containers:
+        - name: mealie
+          image: ghcr.io/mealie-recipes/mealie:v3.20.1
+          env:
+            - name: TZ
+              value: Europe/Rome
+            - name: BASE_URL
+              value: https://mealie.${CLUSTER_DOMAIN}
+            - name: OIDC_AUTH_ENABLED
+              value: "true"
+            - name: OIDC_PROVIDER_NAME
+              value: authentik
+            - name: OIDC_CONFIGURATION_URL
+              value: https://sso.${CLUSTER_DOMAIN}/application/o/mealie/.well-known/openid-configuration
+            - name: OIDC_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: sso-client
+                  key: client_id
+            - name: OIDC_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: sso-client
+                  key: client_secret
+            - name: OIDC_SIGNUP_ENABLED
+              value: "true"
+            - name: OIDC_USER_GROUP
+              value: read-only
+            - name: OIDC_ADMIN_GROUP
+              value: admins
+            - name: OIDC_AUTO_REDIRECT
+              value: "true"
+            - name: OIDC_REMEMBER_ME
+              value: "true"
+
+          ports:
+            - containerPort: &port 9000
+              name: http
+
+          volumeMounts:
+            - name: mealie-config
+              mountPath: /config
+
+          resources:
+            requests:
+              cpu: 150m
+              memory: 256Mi
+            limits:
+              cpu: 300m
+              memory: 1000M
+
+          livenessProbe:
+            httpGet:
+              port: *port
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+
+          readinessProbe:
+            httpGet:
+              port: *port
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+
+      volumes:
+        - name: mealie-config
+          persistentVolumeClaim:
+            claimName: mealie-config
