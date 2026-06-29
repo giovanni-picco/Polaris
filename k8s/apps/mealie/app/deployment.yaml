@@ -68,22 +68,6 @@ spec:
               cpu: 300m
               memory: 1000M
 
-          livenessProbe:
-            httpGet:
-              port: *port
-            initialDelaySeconds: 60
-            periodSeconds: 30
-            timeoutSeconds: 5
-            failureThreshold: 3
-
-          readinessProbe:
-            httpGet:
-              port: *port
-            initialDelaySeconds: 30
-            periodSeconds: 10
-            timeoutSeconds: 5
-            failureThreshold: 3
-
       volumes:
         - name: mealie-config
           persistentVolumeClaim:
