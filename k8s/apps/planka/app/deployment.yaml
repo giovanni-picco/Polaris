@@ -21,7 +21,7 @@ spec:
           image: ghcr.io/plankanban/planka:2.1.1
           env:
             - name: BASE_URL
-              value: "planka.${CLUSTER_DOMAIN}"
+              value: "https://planka.${CLUSTER_DOMAIN}"
             - name: LOG_LEVEL
               value: "info"
             - name: TZ
