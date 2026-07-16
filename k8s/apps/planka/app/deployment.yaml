@@ -18,7 +18,7 @@ spec:
         fsGroupChangePolicy: OnRootMismatch
       containers:
         - name: planka
-          image: ghcr.io/plankanban/planka:v2.1.1
+          image: ghcr.io/plankanban/planka:2.1.1
           env:
             - name: BASE_URL
               value: "planka.${CLUSTER_DOMAIN}"
