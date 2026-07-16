@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: planka
+  namespace: planka
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: &domain planka.${CLUSTER_DOMAIN}
+    cert-manager.io/cluster-issuer: letsencrypt
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts:
+        - *domain
+      secretName: planka-tls
+  rules:
+    - host: *domain
+      http:
+        paths:
+          - backend:
+              service:
+                name: planka
+                port:
+                  number: 1337
+            path: /
+            pathType: Prefix

@@ -1,0 +1,23 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: planka-pg
+  namespace: planka
+spec:
+  instances: 1
+  imageName: ghcr.io/cloudnative-pg/postgresql:17.9
+  primaryUpdateStrategy: unsupervised
+  bootstrap:
+    initdb:
+      database: planka
+      owner: planka
+  storage:
+    size: 10Gi
+    storageClass: longhorn-critical
+  resources:
+    requests:
+      cpu: 100m 
+      memory: 1Gi
+    limits:
+      cpu: 300m
+      memory: 1Gi
