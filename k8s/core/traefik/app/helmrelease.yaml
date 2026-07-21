@@ -56,6 +56,9 @@ spec:
       #   http:
       #     middlewares:
       #       - traefik-traefik-real-ip@kubernetescrd
+      git-ssh:
+        port: 2222
+        nodePort: 22
 
     extraObjects:
       - apiVersion: traefik.io/v1alpha1
