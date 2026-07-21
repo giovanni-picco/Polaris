@@ -7,6 +7,9 @@ spec:
   ports:
     - port: 3000
       name: http
+    - port: 2222
+      name: ssh
+      targetPort: 22
   selector:
     app: forgejo
   type: ClusterIP
