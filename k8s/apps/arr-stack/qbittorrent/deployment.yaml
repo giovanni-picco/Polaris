@@ -18,7 +18,7 @@ spec:
         app: qbittorrent
     spec:
       initContainers:
-        - image: ghcr.io/qdm12/gluetun:v3.41.2
+        - image: ghcr.io/qdm12/gluetun:v3.41.3
           name: gluetun
 
           imagePullPolicy: Always
