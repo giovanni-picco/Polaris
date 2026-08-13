@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: metube
+  namespace: metube
+  labels:
+    app: metube
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: metube
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: metube
+    spec:
+      containers:
+        - name: metube
+          image: ghcr.io/alexta69/metube:2026.08.04
+          ports:
+            - containerPort: 8081
+              name: http
+
+          volumeMounts:
+            - name: download
+              mountPath: /download
+
+          resources:
+            requests:
+              cpu: 150m
+              memory: 256Mi
+            limits:
+              cpu: 300m
+              memory: 1000M
+
+      volumes:
+        - name: download
+          emptyDir: {}

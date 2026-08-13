@@ -8,4 +8,5 @@ resources:
   - ./seerr
   - ./jellyfin
   - ./mealie
+  - ./metube
   - ./planka
