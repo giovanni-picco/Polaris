@@ -13,6 +13,14 @@ spec:
       labels:
         app: jellyfin
     spec:
+      nodeAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+            matchExpressions:
+              - key: node-role/worker
+                operator: In
+                values: ["true"]
       securityContext:
         fsGroup: 1000
         fsGroupChangePolicy: OnRootMismatch
