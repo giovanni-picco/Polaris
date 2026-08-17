@@ -12,5 +12,5 @@ parameters:
   numberOfReplicas: "3"
   staleReplicaTimeout: "30"
   fsType: ext4
-  dataLocality: strict-local
-  recurringJobSelector: '[{"name":"critical-snapshot","isGroup":false},{"name":"critical-backup","isGroup":false}]'
+  dataLocality: best-effort
+recurringJobSelector: '[{"name":"critical-snapshot","isGroup":false},{"name":"critical-backup","isGroup":false}]'
