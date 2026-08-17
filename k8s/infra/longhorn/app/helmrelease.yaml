@@ -25,7 +25,7 @@ spec:
 
   values:
     persistence:
-      defaultClassReplicaCount: 1
+      defaultClassReplicaCount: 3
 
     defaultSettings:
       logLevel: Warn
