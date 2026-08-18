@@ -15,6 +15,16 @@ spec:
       labels:
         app: bentopdf
     spec:
+
+      nodeAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+            matchExpressions:
+              - key: node-role/worker
+                operator: In
+                values: ["true"]
+
       containers:
         - name: bentopdf
           image: ghcr.io/alam00000/bentopdf-simple:2.8.7

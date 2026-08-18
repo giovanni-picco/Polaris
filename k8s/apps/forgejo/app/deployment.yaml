@@ -28,6 +28,15 @@ spec:
       securityContext:
         fsGroup: 1000
 
+      nodeAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+            matchExpressions:
+              - key: node-role/worker
+                operator: In
+                values: ["true"]
+
       initContainers:
         - name: fix-permissions
           image: busybox:1.38

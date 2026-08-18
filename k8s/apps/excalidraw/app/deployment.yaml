@@ -17,6 +17,16 @@ spec:
       labels:
         app: excalidraw
     spec:
+
+      nodeAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+            matchExpressions:
+              - key: node-role/worker
+                operator: In
+                values: ["true"]
+
       containers:
         - name: excalidraw
           image: excalidraw/excalidraw:latest

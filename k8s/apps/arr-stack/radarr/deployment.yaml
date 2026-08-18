@@ -17,6 +17,15 @@ spec:
       labels:
         app: radarr
     spec:
+      nodeAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+            matchExpressions:
+              - key: node-role/worker
+                operator: In
+                values: ["true"]
+
       containers:
         - name: radarr
           image: ghcr.io/linuxserver/radarr:6.3.0

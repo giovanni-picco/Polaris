@@ -16,6 +16,14 @@ spec:
       securityContext:
         fsGroup: 1000
         fsGroupChangePolicy: OnRootMismatch
+      nodeAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+            matchExpressions:
+              - key: node-role/worker
+                operator: In
+                values: ["true"]
       containers:
         - name: planka
           image: ghcr.io/plankanban/planka:2.2.1

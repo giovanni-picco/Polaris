@@ -17,6 +17,15 @@ spec:
       labels:
         app: prowlarr
     spec:
+      nodeAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+            matchExpressions:
+              - key: node-role/worker
+                operator: In
+                values: ["true"]
+
       containers:
         - name: prowlarr
           image: ghcr.io/linuxserver/prowlarr:2.5.2

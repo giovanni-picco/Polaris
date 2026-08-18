@@ -17,6 +17,15 @@ spec:
       labels:
         app: qbittorrent
     spec:
+      nodeAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+            matchExpressions:
+              - key: node-role/worker
+                operator: In
+                values: ["true"]
+
       initContainers:
         - image: ghcr.io/qdm12/gluetun:v3.41.3
           name: gluetun
