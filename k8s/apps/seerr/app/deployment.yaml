@@ -20,10 +20,10 @@ spec:
         preferredDuringSchedulingIgnoredDuringExecution:
           - weight: 100
             preference:
-            matchExpressions:
-              - key: node-role/worker
-                operator: In
-                values: ["true"]
+              matchExpressions:
+                - key: node-role/worker
+                  operator: In
+                  values: ["true"]
       containers:
         - name: seerr
           image: ghcr.io/seerr-team/seerr:v3.4.1
