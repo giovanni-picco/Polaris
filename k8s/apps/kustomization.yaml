@@ -11,3 +11,4 @@ resources:
   - ./metube
   - ./planka
   - ./excalidraw
+  - ./openspeedtest
