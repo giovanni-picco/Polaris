@@ -49,7 +49,7 @@ spec:
 
       containers:
         - name: forgejo
-          image: data.forgejo.org/forgejo/forgejo:16.0.2-rootless
+          image: data.forgejo.org/forgejo/forgejo:16.0.3-rootless
 
           envFrom:
             - configMapRef:
