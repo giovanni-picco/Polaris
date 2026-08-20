@@ -27,7 +27,7 @@ spec:
                   values: ["true"]
       containers:
         - name: metube
-          image: ghcr.io/alexta69/metube:2026.08.17
+          image: ghcr.io/alexta69/metube:2026.08.20
           ports:
             - containerPort: 8081
               name: http
