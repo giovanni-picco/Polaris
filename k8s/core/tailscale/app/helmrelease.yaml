@@ -22,7 +22,6 @@ spec:
     cleanupOnFail: true
 
   values:
-    loginServer: "https://kube.${CLUSTER_DOMAIN}:6443"
     apiServerProxyConfig: 
       allowImpersonation: "true"
       mode: "true"
