@@ -1,0 +1,28 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: tailscale
+  namespace: tailscale
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: tailscale-operator
+      version: "1.102.3"
+      sourceRef:
+        kind: HelmRepository
+        name: tailscale
+        namespace: tailscale
+
+  install:
+    crds: Create
+
+  upgrade:
+    crds: CreateReplace
+    cleanupOnFail: true
+
+  values:
+    loginServer: "https://kube.${CLUSTER_DOMAIN}:6443"
+    apiServerProxyConfig: 
+      allowImpersonation: "true"
+      mode: "true"
