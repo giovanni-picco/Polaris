@@ -1,0 +1,10 @@
+apiVersion: tailscale.com/v1alpha1
+kind: Connector
+metadata:
+  name: polaris-subnet-router
+spec:
+  subnetRouter:
+    advertiseRoutes:
+      - "10.10.5.1/32"
+      - "10.10.5.192/26"
+  hostname: polaris-subnet-router
