@@ -23,5 +23,4 @@ spec:
 
   values:
     apiServerProxyConfig: 
-      allowImpersonation: "true"
       mode: "true"
