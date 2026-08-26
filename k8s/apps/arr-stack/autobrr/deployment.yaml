@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: autobrr
+  namespace: arr-stack
+  labels:
+    app: autobrr
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: autobrr
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: autobrr
+    spec:
+      nodeAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
+                - key: node-role/worker
+                  operator: In
+                  values: ["true"]
+
+      containers:
+        - name: autobrr
+          image: ghcr.io/autobrr/autobrr:v1.84.0
+          env:
+            - name: TZ
+              value: "Europe/Rome"
+
+            - name: AUTOBRR__OIDC_ENABLED
+              value: "true"
+            - name: AUTOBRR__OIDC_ISSUER
+              value: "https://sso.${CLUSTER_DOMAIN}/application/o/autobrr/"
+            - name: AUTOBRR__OIDC_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: autobrr-oidc-secrets
+                  key: client_id
+            - name: AUTOBRR__OIDC_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: autobrr-oidc-secrets
+                  key: client_secret
+            - name: AUTOBRR__OIDC_REDIRECT_URL
+              value: "https://autobrr.${CLUSTER_DOMAIN}/api/auth/oidc/callback"
+            - name: AUTOBRR__OIDC_DISABLE_BUILT_IN_LOGIN
+              value: "true"
+
+          ports:
+            - containerPort: &port 7474
+              name: http
+
+          volumeMounts:
+            - name: autobrr-config
+              mountPath: /config
+
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "128Mi"
+            limits:
+              cpu: "300m"
+              memory: "512Mi"
+
+          livenessProbe:
+            httpGet:
+              path: /api/healthz/liveness
+              port: *port
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+
+          readinessProbe:
+            httpGet:
+              path: /api/healthz/readiness
+              port: *port
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+
+      volumes:
+        - name: autobrr-config
+          persistentVolumeClaim:
+            claimName: autobrr-config
