@@ -43,7 +43,6 @@ spec:
       compactor:
         retention_enabled: true
         delete_request_store: filesystem
-        ingestion_rate_mb: 8
 
     singleBinary:
       replicas: 1
