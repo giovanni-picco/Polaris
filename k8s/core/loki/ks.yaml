@@ -1,0 +1,36 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: core-loki-app
+  namespace: flux-system
+spec:
+  interval: 5m
+  path: ./k8s/core/loki/app
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  postBuild:
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-config
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: core-loki-alloy
+  namespace: flux-system
+spec:
+  interval: 5m
+  path: ./k8s/core/loki/alloy
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  dependsOn:
+    - name: core-loki-app
+  postBuild:
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-config
