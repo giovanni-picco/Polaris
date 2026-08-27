@@ -28,7 +28,7 @@ spec:
 
       containers:
         - name: autobrr
-          image: ghcr.io/autobrr/autobrr:v1.84.0
+          image: ghcr.io/autobrr/autobrr:v1.85.0
           env:
             - name: TZ
               value: "Europe/Rome"
