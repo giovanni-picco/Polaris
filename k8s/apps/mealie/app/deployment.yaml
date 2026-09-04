@@ -27,7 +27,7 @@ spec:
                   values: ["true"]
       containers:
         - name: mealie
-          image: ghcr.io/mealie-recipes/mealie:v3.25.0
+          image: ghcr.io/mealie-recipes/mealie:v3.25.1
           env:
             - name: TZ
               value: Europe/Rome
