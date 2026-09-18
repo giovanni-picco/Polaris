@@ -17,6 +17,7 @@ spec:
       labels:
         app: broker
     spec:
+      enableServiceLinks: false
       affinity:
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
