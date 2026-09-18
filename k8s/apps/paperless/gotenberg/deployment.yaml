@@ -26,7 +26,7 @@ spec:
                     values: ["true"]
       containers:
         - name: gotenberg
-          image: docker.io/gotenberg/gotenberg:8.34
+          image: docker.io/gotenberg/gotenberg:8.37
           command:
             - "gotenberg"
             - "--chromium-disable-javascript=true"
