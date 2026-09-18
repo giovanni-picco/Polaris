@@ -17,12 +17,6 @@ spec:
       labels:
         app: paperless
     spec:
-      # Kubernetes auto-injects Docker-links-style env vars for every Service
-      # in the namespace as <SERVICE_NAME>_PORT. Since the Service below is
-      # named "paperless", that becomes PAPERLESS_PORT=tcp://<clusterIP>:8000,
-      # which clobbers paperless-ngx's own PAPERLESS_PORT setting (used to
-      # configure granian's bind port) and crashes the webserver/celery
-      # processes. Disable the injection; nothing here relies on it.
       enableServiceLinks: false
       affinity:
         nodeAffinity:
@@ -94,11 +88,11 @@ spec:
               mountPath: /usr/src/paperless/export
           resources:
             requests:
-              cpu: 150m
-              memory: 256Mi
+              cpu: 300m
+              memory: 768Mi
             limits:
-              cpu: 1000m
-              memory: 2Gi
+              cpu: "2"
+              memory: 4Gi
           livenessProbe:
             httpGet:
               path: /
