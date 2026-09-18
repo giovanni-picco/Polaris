@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: broker
+  namespace: paperless
+spec:
+  ports:
+    - port: 6379
+      name: redis
+  selector:
+    app: broker
+  type: ClusterIP

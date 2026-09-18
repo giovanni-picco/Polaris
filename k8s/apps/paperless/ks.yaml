@@ -1,0 +1,89 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: apps-paperless-app
+  namespace: flux-system
+spec:
+  interval: 5m
+  path: ./k8s/apps/paperless/app
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  dependsOn:
+    - name: apps-paperless-tika
+    - name: apps-paperless-gotenberg
+    - name: apps-paperless-database
+    - name: apps-paperless-broker
+  postBuild:
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-config
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: apps-paperless-tika
+  namespace: flux-system
+spec:
+  interval: 5m
+  path: ./k8s/apps/paperless/tika
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  postBuild:
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-config
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: apps-paperless-gotenberg
+  namespace: flux-system
+spec:
+  interval: 5m
+  path: ./k8s/apps/paperless/gotenberg
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  postBuild:
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-config
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: apps-paperless-database
+  namespace: flux-system
+spec:
+  interval: 5m
+  path: ./k8s/apps/paperless/database
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  postBuild:
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-config
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: apps-paperless-broker
+  namespace: flux-system
+spec:
+  interval: 5m
+  path: ./k8s/apps/paperless/broker
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  postBuild:
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-config

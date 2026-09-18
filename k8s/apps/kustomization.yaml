@@ -12,3 +12,4 @@ resources:
   # - ./planka
   - ./excalidraw
   - ./openspeedtest
+  - ./paperless

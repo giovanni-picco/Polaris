@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: paperless-config
+  namespace: paperless
+data:
+  USERMAP_UID: "1000"
+  USERMAP_GID: "1000"
+  PAPERLESS_URL: "https://paperless.${CLUSTER_DOMAIN}"
+  PAPERLESS_TIME_ZONE: "Europe/Rome"
+  PAPERLESS_OCR_LANGUAGE: "ita"
+
+  PAPERLESS_DBENGINE: postgresql
+
+  PAPERLESS_REDIS: redis://broker:6379
+
+  PAPERLESS_TIKA_ENABLED: "1"
+  PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://gotenberg:3000
+  PAPERLESS_TIKA_ENDPOINT: http://tika:9998
+
+  PAPERLESS_ADMIN_USER: "admin"
+  PAPERLESS_ADMIN_MAIL: "admin@${CLUSTER_DOMAIN}"
+
+  PAPERLESS_APPS: "allauth.socialaccount.providers.openid_connect"
+  PAPERLESS_SOCIAL_AUTO_SIGNUP: "true"
+  PAPERLESS_DISABLE_REGULAR_LOGIN: "true"
+  PAPERLESS_REDIRECT_LOGIN_TO_SSO: "true"
+
+  PAPERLESS_SOCIAL_ACCOUNT_SYNC_GROUPS: "true"
+  PAPERLESS_SOCIAL_ACCOUNT_SYNC_SUPERUSER_GROUP: "admins"
