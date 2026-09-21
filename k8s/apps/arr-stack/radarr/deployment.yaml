@@ -34,11 +34,9 @@ spec:
               value: "Europe/Rome"
 
             - name: RADARR__AUTH__ENABLED
-              value: "true"
+              value: "false"
             - name: RADARR__AUTH__METHOD
               value: "External"
-            - name: RADARR__AUTH__REQUIRED
-              value: "DisabledForLocalAddresses"
 
             - name: RADARR__AUTH__APIKEY
               valueFrom:

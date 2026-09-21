@@ -33,11 +33,9 @@ spec:
               value: "Europe/Rome"
 
             - name: SONARR__AUTH__ENABLED
-              value: "true"
+              value: "false"
             - name: SONARR__AUTH__METHOD
               value: "External"
-            - name: SONARR__AUTH__REQUIRED
-              value: "DisabledForLocalAddresses"
 
             - name: SONARR__AUTH__APIKEY
               valueFrom:
