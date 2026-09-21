@@ -34,11 +34,9 @@ spec:
               value: "Europe/Rome"
 
             - name: PROWLARR__AUTH__ENABLED
-              value: "true"
+              value: "false"
             - name: PROWLARR__AUTH__METHOD
               value: "External"
-            - name: PROWLARR__AUTH__REQUIRED
-              value: "DisabledForLocalAddresses"
 
           ports:
             - containerPort: &port 9696
