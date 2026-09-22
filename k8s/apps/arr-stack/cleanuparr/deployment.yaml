@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cleanuparr
+  namespace: arr-stack
+  labels:
+    app: cleanuparr
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cleanuparr
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: cleanuparr
+    spec:
+      nodeAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
+                - key: node-role/worker
+                  operator: In
+                  values: ["true"]
+
+      containers:
+        - name: cleanuparr
+          image: ghcr.io/cleanuparr/cleanuparr:2.10.6
+          env:
+            - name: TZ
+              value: "Europe/Rome"
+
+          ports:
+            - containerPort: &port 11011
+              name: http
+
+          volumeMounts:
+            - name: cleanuparr-config
+              mountPath: /config
+            - name: media-torrents
+              mountPath: /downloads
+
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "128Mi"
+            limits:
+              cpu: "300m"
+              memory: "512Mi"
+
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 30
+
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: *port
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: *port
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 3
+
+      volumes:
+        - name: cleanuparr-config
+          persistentVolumeClaim:
+            claimName: cleanuparr-config
+        - name: media-torrents
+          persistentVolumeClaim:
+            claimName: media-torrents
