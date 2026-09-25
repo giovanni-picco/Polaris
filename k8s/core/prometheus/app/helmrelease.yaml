@@ -7,7 +7,7 @@ spec:
   chart:
     spec:
       chart: kube-prometheus-stack
-      version: 91.5.1
+      version: 91.5.3
       reconcileStrategy: ChartVersion
       sourceRef:
         kind: HelmRepository
