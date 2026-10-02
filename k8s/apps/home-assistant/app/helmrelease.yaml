@@ -95,7 +95,7 @@ spec:
           discovery_url: "https://sso.${CLUSTER_DOMAIN}/application/o/home-assistant/.well-known/openid-configuration"
           display_name: "Authentik"
           roles:
-            admin: "Home Assistant Admins"
+            admin: "admins"
           features:
             automatic_user_linking: true
 
