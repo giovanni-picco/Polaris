@@ -13,3 +13,4 @@ resources:
   - ./excalidraw
   - ./openspeedtest
   - ./paperless
+  - ./home-assistant

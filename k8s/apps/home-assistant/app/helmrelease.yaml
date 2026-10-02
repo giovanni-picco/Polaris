@@ -1,0 +1,140 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: home-assistant
+  namespace: home-assistant
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: home-assistant
+      version: "0.3.83"
+      sourceRef:
+        kind: HelmRepository
+        name: home-assistant
+        namespace: home-assistant
+
+  install:
+    remediation:
+      retries: 5
+
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+
+  values:
+    replicaCount: 1
+
+    env:
+      - name: TZ
+        value: "Europe/Rome"
+
+    envFrom:
+      - secretRef:
+          name: home-assistant-oidc-secrets
+
+    service:
+      type: ClusterIP
+      port: 8123
+
+    ingress:
+      enabled: true
+      className: traefik
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt
+        external-dns.alpha.kubernetes.io/hostname: &host home.${CLUSTER_DOMAIN}
+        traefik.ingress.kubernetes.io/router.entrypoints: websecure
+      hosts:
+        - host: *host
+          paths:
+            - path: /
+              pathType: Prefix
+      tls:
+        - hosts:
+            - *host
+          secretName: home-assistant-tls
+
+    initContainers:
+      - name: install-auth-oidc
+        image: alpine/git:latest
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            set -e
+            rm -rf /tmp/oidc /config/custom_components/auth_oidc
+            git clone --depth 1 --branch v1.2.1 https://github.com/christiaangoossens/hass-oidc-auth.git /tmp/oidc
+            mkdir -p /config/custom_components
+            cp -r /tmp/oidc/custom_components/auth_oidc /config/custom_components/
+        volumeMounts:
+          - name: home-assistant
+            mountPath: /config
+
+    configuration:
+      enabled: true
+      forceInit: false
+
+      trusted_proxies:
+        - 10.0.0.0/8
+      templateConfig: |-
+        # Loads default set of integrations. Do not remove.
+        default_config:
+
+        http:
+          use_x_forwarded_for: true
+          trusted_proxies:
+            {{- range .Values.configuration.trusted_proxies }}
+            - {{ . }}
+            {{- end }}
+
+        # Load frontend themes from the themes folder
+        frontend:
+          themes: !include_dir_merge_named themes
+
+        automation: !include automations.yaml
+        script: !include scripts.yaml
+        scene: !include scenes.yaml
+
+        # SSO con Authentik (https://github.com/christiaangoossens/hass-oidc-auth)
+        auth_oidc:
+          client_id: !env_var OIDC_CLIENT_ID
+          client_secret: !env_var OIDC_CLIENT_SECRET
+          discovery_url: "https://sso.${CLUSTER_DOMAIN}/application/o/home-assistant/.well-known/openid-configuration"
+          display_name: "Authentik"
+          roles:
+            admin: "Home Assistant Admins"
+          features:
+            automatic_user_linking: true
+
+    persistence:
+      enabled: true
+      accessMode: ReadWriteOnce
+      size: 5Gi
+      storageClass: longhorn-default
+
+    resources:
+      requests:
+        cpu: 100m
+        memory: 512Mi
+      limits:
+        cpu: 1000m
+        memory: 2Gi
+
+    startupProbe:
+      httpGet:
+        path: /
+        port: http
+        scheme: HTTP
+      periodSeconds: 10
+      timeoutSeconds: 3
+      failureThreshold: 30
+
+    affinity:
+      nodeAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
+                - key: node-role/worker
+                  operator: In
+                  values: ["true"]
