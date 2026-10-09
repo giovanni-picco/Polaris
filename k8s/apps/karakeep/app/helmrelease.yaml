@@ -86,6 +86,10 @@ spec:
       chrome:
         containers:
           chrome:
+            # gcr.io/zenika-hub non è più accessibile (403), stessa immagine da Docker Hub
+            image:
+              repository: docker.io/zenika/alpine-chrome
+              tag: "124"
             # Il namespace applica PodSecurity "baseline": niente SYS_ADMIN, quindi sandbox disabilitata
             args:
               - --no-sandbox
