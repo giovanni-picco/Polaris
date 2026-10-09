@@ -14,3 +14,4 @@ resources:
   - ./openspeedtest
   - ./paperless
   - ./home-assistant
+  - ./karakeep
