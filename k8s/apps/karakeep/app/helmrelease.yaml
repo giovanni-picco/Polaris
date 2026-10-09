@@ -133,6 +133,9 @@ spec:
       environment:
         MEILI_ENV: production
         MEILI_NO_ANALYTICS: true
+        # Di default Meilisearch si dimensiona su RAM/core del nodo, non sui limiti del container (OOMKilled)
+        MEILI_MAX_INDEXING_MEMORY: 512Mb
+        MEILI_MAX_INDEXING_THREADS: 2
       persistence:
         enabled: true
         size: 2Gi
@@ -143,5 +146,5 @@ spec:
           memory: 128Mi
         limits:
           cpu: 500m
-          memory: 1Gi
+          memory: 2Gi
       affinity: *affinity
