@@ -74,6 +74,12 @@ spec:
                 secretKeyRef:
                   name: sso-client
                   key: oidc-providers
+            - name: PAPERLESS_AI_LLM_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: openai-cred
+                  key: OPENAI_API_KEY
+
           ports:
             - containerPort: &port 8000
               name: http
