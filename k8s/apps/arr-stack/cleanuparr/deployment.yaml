@@ -28,7 +28,7 @@ spec:
 
       containers:
         - name: cleanuparr
-          image: ghcr.io/cleanuparr/cleanuparr:2.10.10
+          image: ghcr.io/cleanuparr/cleanuparr:2.10.11
           env:
             - name: TZ
               value: "Europe/Rome"
