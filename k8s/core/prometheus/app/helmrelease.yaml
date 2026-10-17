@@ -122,3 +122,7 @@ spec:
       networkPolicy:
         enabled: true
         flavor: cilium
+
+    # Cilium runs with kubeProxyReplacement, there is no kube-proxy to scrape
+    kubeProxy:
+      enabled: false
