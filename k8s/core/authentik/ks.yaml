@@ -11,8 +11,11 @@ spec:
     kind: GitRepository
     name: flux-system
   dependsOn:
+    - name: core-cnpg-barman
     - name: core-cnpg-app
   postBuild:
+    substitute:
+      CNPG_CLUSTER: authentik-pg
     substituteFrom:
       - kind: ConfigMap
         name: cluster-config
