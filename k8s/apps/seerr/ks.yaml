@@ -10,7 +10,13 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
+  dependsOn:
+    - name: infra-volsync-app
   postBuild:
+    substitute:
+      APP: seerr
+      VOLSYNC_CLAIM: seerr-config
+      VOLSYNC_CAPACITY: 5Gi
     substituteFrom:
       - kind: ConfigMap
         name: cluster-config
