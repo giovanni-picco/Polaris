@@ -1,0 +1,30 @@
+apiVersion: barmancloud.cnpg.io/v1
+kind: ObjectStore
+metadata:
+  name: ${CNPG_CLUSTER}-s3
+spec:
+  retentionPolicy: 30d
+  configuration:
+    destinationPath: s3://polaris-cnpg/
+    endpointURL: https://nbg1.your-objectstorage.com
+    s3Credentials:
+      accessKeyId:
+        name: ${CNPG_CLUSTER}-s3
+        key: ACCESS_KEY_ID
+      secretAccessKey:
+        name: ${CNPG_CLUSTER}-s3
+        key: ACCESS_SECRET_KEY
+      region:
+        name: ${CNPG_CLUSTER}-s3
+        key: REGION
+    wal:
+      compression: gzip
+    data:
+      compression: gzip
+  instanceSidecarConfiguration:
+    env:
+      # Recent AWS SDKs send checksums that non-AWS S3 implementations reject
+      - name: AWS_REQUEST_CHECKSUM_CALCULATION
+        value: when_required
+      - name: AWS_RESPONSE_CHECKSUM_VALIDATION
+        value: when_required

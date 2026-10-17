@@ -1,0 +1,28 @@
+# Continuous backup of a CNPG cluster to Hetzner Object Storage via the
+# Barman Cloud plugin: WAL archiving plus a daily base backup.
+#
+# Variables (Flux postBuild.substitute on the database Kustomization):
+#   CNPG_CLUSTER   required  name of the CNPG Cluster in this namespace
+#
+# Backups land in s3://polaris-cnpg/<CNPG_CLUSTER>.
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+resources:
+  - ./externalsecret.yaml
+  - ./objectstore.yaml
+  - ./scheduledbackup.yaml
+patches:
+  - target:
+      group: postgresql.cnpg.io
+      kind: Cluster
+    patch: |-
+      apiVersion: postgresql.cnpg.io/v1
+      kind: Cluster
+      metadata:
+        name: not-used
+      spec:
+        plugins:
+          - name: barman-cloud.cloudnative-pg.io
+            isWALArchiver: true
+            parameters:
+              barmanObjectName: ${CNPG_CLUSTER}-s3
