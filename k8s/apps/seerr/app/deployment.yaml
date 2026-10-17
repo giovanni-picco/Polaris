@@ -5,6 +5,8 @@ metadata:
   namespace: seerr
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: seerr
