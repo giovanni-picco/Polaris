@@ -5,3 +5,4 @@ resources:
 - ./cert-manager/
 - ./longhorn/
 - ./intel-gpu-plugin/
+- ./metrics-server/
