@@ -46,6 +46,9 @@ spec:
 
     singleBinary:
       replicas: 1
+      resources:
+        requests: { cpu: 50m, memory: 320Mi }
+        limits: { memory: 1Gi }
       persistence:
         enabled: true
         storageClass: longhorn-default

@@ -23,6 +23,9 @@ spec:
     controller:
       type: daemonset
     alloy:
+      resources:
+        requests: { cpu: 25m, memory: 192Mi }
+        limits: { memory: 384Mi }
       configMap:
         content: |
           discovery.kubernetes "pods" {
