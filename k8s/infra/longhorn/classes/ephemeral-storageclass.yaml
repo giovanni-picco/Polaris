@@ -4,13 +4,16 @@ kind: StorageClass
 metadata:
   name: longhorn-ephemeral
   annotations:
+    kustomize.toolkit.fluxcd.io/force: enabled
     longhorn.io/description: "Volumi temporanei, nessun backup"
 provisioner: driver.longhorn.io
 allowVolumeExpansion: true
 reclaimPolicy: Delete
-volumeBindingMode: Immediate
+volumeBindingMode: WaitForFirstConsumer
 parameters:
   numberOfReplicas: "1"
   staleReplicaTimeout: "30"
   fsType: ext4
   dataLocality: strict-local
+  # Group without jobs, otherwise Longhorn auto-assigns the "default" group
+  recurringJobSelector: '[{"name":"none","isGroup":true}]'
