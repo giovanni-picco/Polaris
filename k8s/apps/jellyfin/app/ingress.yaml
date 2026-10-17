@@ -12,7 +12,7 @@ spec:
   tls:
     - hosts:
         - *domain
-      secretName: seerr-tls
+      secretName: jellyfin-tls
   rules:
     - host: *domain
       http:
