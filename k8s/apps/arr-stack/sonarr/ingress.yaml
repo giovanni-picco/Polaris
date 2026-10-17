@@ -7,7 +7,7 @@ metadata:
     external-dns.alpha.kubernetes.io/hostname: &domain sonarr.${CLUSTER_DOMAIN}
     cert-manager.io/cluster-issuer: letsencrypt
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
-    traefik.ingress.kubernetes.io/router.middlewares: arr-stack-authentik@kubernetescrd
+    traefik.ingress.kubernetes.io/router.middlewares: arr-stack_authentik@kubernetescrd
 spec:
   ingressClassName: traefik
   tls:

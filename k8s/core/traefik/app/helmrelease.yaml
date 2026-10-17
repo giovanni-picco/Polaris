@@ -36,6 +36,8 @@ spec:
           secretName: dashboard-traefik-tls
 
     providers:
+      kubernetesCRD:
+        safeNaming: true
       kubernetesIngress:
         publishedService:
           enabled: true
@@ -47,38 +49,32 @@ spec:
     ports:
       web:
         http:
+          aliasHeadersStrategy: delete
           redirections:
             entryPoint:
               to: websecure
               scheme: https
               permanent: true
-      # websecure:
-      #   http:
-      #     middlewares:
-      #       - traefik-traefik-real-ip@kubernetescrd
+      websecure:
+        http:
+          aliasHeadersStrategy: delete
+      traefik:
+        http:
+          aliasHeadersStrategy: delete
+      metrics:
+        http:
+          aliasHeadersStrategy: delete
       git-ssh:
         port: 2222
         nodePort: 22
+        http:
+          aliasHeadersStrategy: delete
 
     metrics:
       prometheus:
         enabled: true
 
     extraObjects:
-      - apiVersion: traefik.io/v1alpha1
-        kind: Middleware
-        metadata:
-          name: traefik-real-ip
-          namespace: traefik
-        spec:
-          plugin:
-            traefik-real-ip:
-              excludednets:
-                - 10.10.0.0/16
-                - 10.244.0.0/16
-                - 10.96.0.0/12
-                - 192.168.0.0/16
-                - 172.16.0.0/12
       - apiVersion: cert-manager.io/v1
         kind: Certificate
         metadata:
@@ -93,8 +89,3 @@ spec:
           dnsNames:
             - traefik.${CLUSTER_DOMAIN}
 
-    experimental:
-      plugins:
-        traefik-real-ip:
-          moduleName: github.com/soulbalz/traefik-real-ip
-          version: v1.0.3
