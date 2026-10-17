@@ -13,3 +13,18 @@ spec:
     name: flux-system
   dependsOn:
     - name: infra-longhorn-app
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: infra-snapshot-controller-class
+  namespace: flux-system
+spec:
+  interval: 5m
+  path: ./k8s/infra/snapshot-controller/class
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  dependsOn:
+    - name: infra-snapshot-controller-app

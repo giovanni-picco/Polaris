@@ -27,9 +27,3 @@ spec:
         requests: { cpu: 10m, memory: 32Mi }
         limits: { memory: 128Mi }
 
-    volumeSnapshotClasses:
-      - name: longhorn-snapclass
-        driver: driver.longhorn.io
-        deletionPolicy: Delete
-        parameters:
-          type: snap
