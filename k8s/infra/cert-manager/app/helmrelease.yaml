@@ -27,3 +27,14 @@ spec:
     crds:
       enabled: true
       keep: false
+    resources:
+      requests: { cpu: 10m, memory: 64Mi }
+      limits: { memory: 128Mi }
+    webhook:
+      resources:
+        requests: { cpu: 10m, memory: 32Mi }
+        limits: { memory: 64Mi }
+    cainjector:
+      resources:
+        requests: { cpu: 10m, memory: 96Mi }
+        limits: { memory: 192Mi }
