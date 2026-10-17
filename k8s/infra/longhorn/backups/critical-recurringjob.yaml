@@ -7,7 +7,7 @@ metadata:
 spec:
   cron: "0 */2 * * *"
   task: snapshot
-  groups: []
+  groups: ["critical"]
   retain: 12
   concurrency: 1
   labels:
@@ -21,7 +21,7 @@ metadata:
 spec:
   cron: "0 3 * * *"
   task: backup
-  groups: []
+  groups: ["critical"]
   retain: 7
   concurrency: 1
   labels:

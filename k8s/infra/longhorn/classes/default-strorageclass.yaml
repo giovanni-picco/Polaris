@@ -3,6 +3,7 @@ kind: StorageClass
 metadata:
   name: longhorn-default
   annotations:
+    kustomize.toolkit.fluxcd.io/force: enabled
     longhorn.io/description: "Volumi standard, snapshot + backup settimanale"
 provisioner: driver.longhorn.io
 allowVolumeExpansion: true
@@ -12,5 +13,5 @@ parameters:
   numberOfReplicas: "2"
   staleReplicaTimeout: "30"
   fsType: ext4
-  dataLocality:  best-effort
-recurringJobSelector: '[{"name":"default-snapshot","isGroup":false},{"name":"default-backup","isGroup":false}]'
+  dataLocality: best-effort
+  recurringJobSelector: '[{"name":"default","isGroup":true}]'
