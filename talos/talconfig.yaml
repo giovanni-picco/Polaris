@@ -122,6 +122,13 @@ controlPlane:
         allowSchedulingOnControlPlanes: true
         proxy:
           disabled: true
+        # Expose metrics endpoints so Prometheus can scrape them
+        controllerManager:
+          extraArgs:
+            bind-address: 0.0.0.0
+        scheduler:
+          extraArgs:
+            bind-address: 0.0.0.0
 
 # ─────────────────────────────────────────────
 # PATCH WORKER
