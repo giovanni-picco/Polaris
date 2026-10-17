@@ -89,3 +89,6 @@ spec:
           dnsNames:
             - traefik.${CLUSTER_DOMAIN}
 
+    resources:
+      requests: { cpu: 25m, memory: 96Mi }
+      limits: { memory: 256Mi }
