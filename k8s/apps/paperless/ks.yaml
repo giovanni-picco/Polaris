@@ -68,7 +68,11 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
+  dependsOn:
+    - name: core-cnpg-barman
   postBuild:
+    substitute:
+      CNPG_CLUSTER: paperless-pg
     substituteFrom:
       - kind: ConfigMap
         name: cluster-config
