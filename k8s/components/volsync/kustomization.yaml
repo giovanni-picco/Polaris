@@ -1,0 +1,19 @@
+# VolSync backup + automatic restore for a single PVC.
+#
+# Variables (Flux postBuild.substitute on the app Kustomization):
+#   APP                    required  name of the app, used for object names and the restic repository path
+#   VOLSYNC_CLAIM          required  name of the PVC to create and back up
+#   VOLSYNC_CAPACITY       required  size of the PVC
+#   VOLSYNC_STORAGECLASS   optional  default: longhorn-default
+#   VOLSYNC_SCHEDULE       optional  default: daily at 04:00
+#   VOLSYNC_UID/GID        optional  user/group the mover runs as, default: 1000
+#
+# The PVC is populated from the latest backup when it is created; if the
+# repository has no snapshots yet it starts empty.
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+resources:
+  - ./externalsecret.yaml
+  - ./replicationsource.yaml
+  - ./replicationdestination.yaml
+  - ./pvc.yaml

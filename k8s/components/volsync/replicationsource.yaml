@@ -1,0 +1,23 @@
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: ${APP}
+spec:
+  sourcePVC: ${VOLSYNC_CLAIM}
+  trigger:
+    schedule: "${VOLSYNC_SCHEDULE:=0 4 * * *}"
+  restic:
+    repository: ${APP}-volsync
+    copyMethod: Snapshot
+    volumeSnapshotClassName: longhorn-snapclass
+    cacheStorageClassName: longhorn-ephemeral
+    cacheCapacity: 1Gi
+    pruneIntervalDays: 7
+    retain:
+      daily: 7
+      weekly: 4
+      monthly: 3
+    moverSecurityContext:
+      runAsUser: ${VOLSYNC_UID:=1000}
+      runAsGroup: ${VOLSYNC_GID:=1000}
+      fsGroup: ${VOLSYNC_GID:=1000}

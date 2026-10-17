@@ -1,0 +1,23 @@
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationDestination
+metadata:
+  name: ${APP}-dst
+spec:
+  trigger:
+    manual: restore-once
+  restic:
+    repository: ${APP}-volsync
+    copyMethod: Snapshot
+    volumeSnapshotClassName: longhorn-snapclass
+    storageClassName: ${VOLSYNC_STORAGECLASS:=longhorn-default}
+    accessModes: [ReadWriteOnce]
+    capacity: ${VOLSYNC_CAPACITY}
+    cacheStorageClassName: longhorn-ephemeral
+    cacheCapacity: 1Gi
+    cleanupTempPVC: true
+    cleanupCachePVC: true
+    enableFileDeletion: true
+    moverSecurityContext:
+      runAsUser: ${VOLSYNC_UID:=1000}
+      runAsGroup: ${VOLSYNC_GID:=1000}
+      fsGroup: ${VOLSYNC_GID:=1000}
