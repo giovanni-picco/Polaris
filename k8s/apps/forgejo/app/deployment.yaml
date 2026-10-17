@@ -28,14 +28,15 @@ spec:
       securityContext:
         fsGroup: 1000
 
-      nodeAffinity:
-        preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
-            preference:
-              matchExpressions:
-                - key: node-role/worker
-                  operator: In
-                  values: ["true"]
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: node-role/worker
+                    operator: In
+                    values: ["true"]
 
       initContainers:
         - name: fix-permissions

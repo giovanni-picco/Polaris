@@ -17,14 +17,15 @@ spec:
       labels:
         app: mealie
     spec:
-      nodeAffinity:
-        preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
-            preference:
-              matchExpressions:
-                - key: node-role/worker
-                  operator: In
-                  values: ["true"]
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: node-role/worker
+                    operator: In
+                    values: ["true"]
       containers:
         - name: mealie
           image: ghcr.io/mealie-recipes/mealie:v3.29.0

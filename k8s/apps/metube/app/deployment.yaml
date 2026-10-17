@@ -17,14 +17,15 @@ spec:
       labels:
         app: metube
     spec:
-      nodeAffinity:
-        preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
-            preference:
-              matchExpressions:
-                - key: node-role/worker
-                  operator: In
-                  values: ["true"]
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: node-role/worker
+                    operator: In
+                    values: ["true"]
       containers:
         - name: metube
           image: ghcr.io/alexta69/metube:2026.10.09

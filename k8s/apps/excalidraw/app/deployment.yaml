@@ -18,14 +18,15 @@ spec:
         app: excalidraw
     spec:
 
-      nodeAffinity:
-        preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
-            preference:
-              matchExpressions:
-                - key: node-role/worker
-                  operator: In
-                  values: ["true"]
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: node-role/worker
+                    operator: In
+                    values: ["true"]
 
       containers:
         - name: excalidraw
