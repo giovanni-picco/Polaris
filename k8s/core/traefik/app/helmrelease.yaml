@@ -36,6 +36,8 @@ spec:
           secretName: dashboard-traefik-tls
 
     providers:
+      kubernetesCRD:
+        safeNaming: true
       kubernetesIngress:
         publishedService:
           enabled: true
