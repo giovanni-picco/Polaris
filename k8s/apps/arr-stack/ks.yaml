@@ -100,8 +100,16 @@ spec:
     kind: GitRepository
     name: flux-system
   dependsOn:
+    - name: infra-volsync-app
     - name: apps-arr-stack-media
   postBuild:
+    substitute:
+      APP: radarr
+      VOLSYNC_CLAIM: radarr-config
+      VOLSYNC_CAPACITY: 1Gi
+      VOLSYNC_SCHEDULE: "20 4 * * *"
+      VOLSYNC_UID: "911"
+      VOLSYNC_GID: "911"
     substituteFrom:
       - kind: ConfigMap
         name: cluster-config
