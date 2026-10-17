@@ -4,6 +4,7 @@ metadata:
   name: longhorn-default
   annotations:
     kustomize.toolkit.fluxcd.io/force: enabled
+    storageclass.kubernetes.io/is-default-class: "true"
     longhorn.io/description: "Volumi standard, snapshot + backup settimanale"
 provisioner: driver.longhorn.io
 allowVolumeExpansion: true
