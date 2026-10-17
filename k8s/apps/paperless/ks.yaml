@@ -15,6 +15,8 @@ spec:
     - name: apps-paperless-gotenberg
     - name: apps-paperless-database
     - name: apps-paperless-broker
+    - name: apps-paperless-volsync-data
+    - name: apps-paperless-volsync-media
   postBuild:
     substituteFrom:
       - kind: ConfigMap
@@ -87,3 +89,47 @@ spec:
     substituteFrom:
       - kind: ConfigMap
         name: cluster-config
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: apps-paperless-volsync-data
+  namespace: flux-system
+spec:
+  interval: 5m
+  path: ./k8s/apps/paperless/volsync/data
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  dependsOn:
+    - name: infra-volsync-app
+  postBuild:
+    substitute:
+      APP: paperless-data
+      VOLSYNC_CLAIM: paperless-data
+      VOLSYNC_CAPACITY: 5Gi
+      VOLSYNC_STORAGECLASS: longhorn-critical
+      VOLSYNC_SCHEDULE: "35 4 * * *"
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: apps-paperless-volsync-media
+  namespace: flux-system
+spec:
+  interval: 5m
+  path: ./k8s/apps/paperless/volsync/media
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  dependsOn:
+    - name: infra-volsync-app
+  postBuild:
+    substitute:
+      APP: paperless-media
+      VOLSYNC_CLAIM: paperless-media
+      VOLSYNC_CAPACITY: 50Gi
+      VOLSYNC_STORAGECLASS: longhorn-critical
+      VOLSYNC_SCHEDULE: "40 4 * * *"
