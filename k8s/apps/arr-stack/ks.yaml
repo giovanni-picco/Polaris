@@ -46,7 +46,16 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
+  dependsOn:
+    - name: infra-volsync-app
   postBuild:
+    substitute:
+      APP: prowlarr
+      VOLSYNC_CLAIM: prowlarr-config
+      VOLSYNC_CAPACITY: 1Gi
+      VOLSYNC_SCHEDULE: "10 4 * * *"
+      VOLSYNC_UID: "911"
+      VOLSYNC_GID: "911"
     substituteFrom:
       - kind: ConfigMap
         name: cluster-config
