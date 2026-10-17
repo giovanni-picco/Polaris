@@ -3,6 +3,7 @@ kind: StorageClass
 metadata:
   name: longhorn-critical
   annotations:
+    kustomize.toolkit.fluxcd.io/force: enabled
     longhorn.io/description: "Volumi critici, snapshot frequenti + backup giornaliero"
 provisioner: driver.longhorn.io
 allowVolumeExpansion: true
@@ -13,4 +14,4 @@ parameters:
   staleReplicaTimeout: "30"
   fsType: ext4
   dataLocality: best-effort
-recurringJobSelector: '[{"name":"critical-snapshot","isGroup":false},{"name":"critical-backup","isGroup":false}]'
+  recurringJobSelector: '[{"name":"critical","isGroup":true}]'
