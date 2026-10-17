@@ -28,8 +28,16 @@ spec:
     kind: GitRepository
     name: flux-system
   dependsOn:
+    - name: infra-volsync-app
     - name: apps-arr-stack-media
   postBuild:
+    substitute:
+      APP: qbittorrent
+      VOLSYNC_CLAIM: qbittorrent-config
+      VOLSYNC_CAPACITY: 1Gi
+      VOLSYNC_SCHEDULE: "15 4 * * *"
+      VOLSYNC_UID: "1000"
+      VOLSYNC_GID: "1000"
     substituteFrom:
       - kind: ConfigMap
         name: cluster-config
