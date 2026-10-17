@@ -6,3 +6,4 @@ resources:
 - ./longhorn/
 - ./intel-gpu-plugin/
 - ./metrics-server/
+- ./snapshot-controller/
