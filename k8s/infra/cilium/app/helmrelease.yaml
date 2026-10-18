@@ -48,6 +48,22 @@ spec:
 
     operator:
       replicas: 1
+      prometheus:
+        enabled: true
+
+    # Metrics endpoints only: the PodMonitors live in core/prometheus/monitors
+    prometheus:
+      enabled: true
+
+    hubble:
+      metrics:
+        enabled:
+          - dns
+          - drop
+          - tcp
+          - flow
+          - port-distribution
+          - icmp
 
     securityContext:
       capabilities:
