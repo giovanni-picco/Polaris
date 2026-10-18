@@ -15,3 +15,25 @@ spec:
     substituteFrom:
       - kind: ConfigMap
         name: cluster-config
+---
+# Ingresses (and their Traefik middlewares) for the web UIs of components that
+# are deployed before Traefik, e.g. infra. They live here so those components
+# never depend on Traefik and can come up first on a fresh cluster.
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: core-traefik-ingresses
+  namespace: flux-system
+spec:
+  interval: 5m
+  path: ./k8s/core/traefik/ingresses
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  dependsOn:
+    - name: core-traefik-app
+  postBuild:
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-config
