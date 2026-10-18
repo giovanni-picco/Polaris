@@ -67,7 +67,7 @@ spec:
             mkdir -p /config/custom_components
             cp -r /tmp/oidc/custom_components/auth_oidc /config/custom_components/
         volumeMounts:
-          - name: home-assistant
+          - name: home-assistant-pvc
             mountPath: /config
 
     configuration:
