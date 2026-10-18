@@ -62,8 +62,8 @@ spec:
       persistence:
         type: pvc
         enabled: true
-        accessModes: [ReadWriteOnce]
-        size: 10Gi
+        # PVC created by the VolSync component
+        existingClaim: grafana-data
       resources:
         requests: { cpu: 50m, memory: 512Mi }
         limits: { memory: 1Gi }
