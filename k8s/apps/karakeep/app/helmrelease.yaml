@@ -77,14 +77,9 @@ spec:
                         operator: In
                         values: ["true"]
 
-        statefulset:
-          volumeClaimTemplates:
-            - name: data
-              accessMode: ReadWriteOnce
-              size: 5Gi
-              storageClass: longhorn-critical
-              globalMounts:
-                - path: /data
+        # Deployment + PVC created by the VolSync component (karakeep-data)
+        type: deployment
+        strategy: Recreate
 
       chrome:
         containers:
@@ -129,6 +124,14 @@ spec:
           - hosts:
               - *host
             secretName: karakeep-tls
+
+    persistence:
+      data:
+        existingClaim: karakeep-data
+        advancedMounts:
+          karakeep:
+            karakeep:
+              - path: /data
 
     meilisearch:
       auth:
