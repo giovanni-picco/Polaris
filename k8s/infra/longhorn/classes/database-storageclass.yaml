@@ -1,0 +1,17 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: longhorn-database
+  annotations:
+    longhorn.io/description: "Volumi Postgres (CNPG): nessun job Longhorn, backup e PITR con Barman"
+provisioner: driver.longhorn.io
+allowVolumeExpansion: true
+reclaimPolicy: Retain
+volumeBindingMode: Immediate
+parameters:
+  numberOfReplicas: "3"
+  staleReplicaTimeout: "30"
+  fsType: ext4
+  dataLocality: best-effort
+  # Group without jobs, otherwise Longhorn auto-assigns the "default" group
+  recurringJobSelector: '[{"name":"none","isGroup":true}]'
