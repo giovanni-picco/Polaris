@@ -21,6 +21,22 @@ spec:
     crds: CreateReplace
     cleanupOnFail: true
 
+  # The chart only renders its ServiceMonitor when the CRD already exists,
+  # which depends on install order; it is defined in core/prometheus/monitors
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: ServiceMonitor
+              name: volsync
+            patch: |
+              $patch: delete
+              apiVersion: monitoring.coreos.com/v1
+              kind: ServiceMonitor
+              metadata:
+                name: volsync
+                namespace: volsync-system
+
   values:
     manageCRDs: true
     resources:
