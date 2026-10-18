@@ -99,7 +99,6 @@ spec:
           features:
             automatic_user_linking: true
 
-    # Deployment + PVC created by the VolSync component (home-assistant-config)
     controller:
       type: Deployment
     deploymentStrategy: Recreate

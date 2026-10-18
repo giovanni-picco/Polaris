@@ -23,7 +23,6 @@ spec:
       compression: gzip
   instanceSidecarConfiguration:
     env:
-      # Recent AWS SDKs send checksums that non-AWS S3 implementations reject
       - name: AWS_REQUEST_CHECKSUM_CALCULATION
         value: when_required
       - name: AWS_RESPONSE_CHECKSUM_VALIDATION

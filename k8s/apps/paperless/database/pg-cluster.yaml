@@ -5,8 +5,6 @@ metadata:
   namespace: paperless
 spec:
   instances: 1
-  # Single instance: a PDB only blocks node drains (Talos upgrades), it
-  # cannot keep the database available anyway
   enablePDB: false
   imageName: ghcr.io/cloudnative-pg/postgresql:17.9
   primaryUpdateStrategy: unsupervised

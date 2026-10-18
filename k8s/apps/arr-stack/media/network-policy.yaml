@@ -24,6 +24,6 @@ spec:
               kubernetes.io/metadata.name: seerr
       ports:
         - protocol: TCP
-          port: 7878 # radarr
+          port: 7878
         - protocol: TCP
-          port: 8989 # sonarr
+          port: 8989

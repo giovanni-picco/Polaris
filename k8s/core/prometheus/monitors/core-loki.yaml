@@ -1,4 +1,3 @@
-# core: Loki and Alloy
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor

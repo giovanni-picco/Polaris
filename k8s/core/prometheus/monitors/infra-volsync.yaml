@@ -1,4 +1,3 @@
-# infra: VolSync controller, behind kube-rbac-proxy
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor

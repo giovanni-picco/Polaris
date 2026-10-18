@@ -12,11 +12,9 @@ additionalApiServerCertSans:
 additionalMachineCertSans:
   - kube.polarislab.dev
   - 10.10.5.10
-  # Controlplane
   - 10.10.5.11
   - 10.10.5.12
   - 10.10.5.13
-  # Worker
   - 10.10.5.14
   - 10.10.5.15
 
@@ -24,9 +22,6 @@ cniConfig:
   name: none
 
 nodes:
-  # ─────────────────────────────────────────────
-  # CONTROLPLANE 1 — PCP-01 (HP ProDesk 400 G2)
-  # ─────────────────────────────────────────────
   - hostname: PCP-01
     ipAddress: 10.10.5.11
     controlPlane: true
@@ -37,9 +32,6 @@ nodes:
         vip:
           ip: 10.10.5.10
 
-  # ─────────────────────────────────────────────
-  # CONTROLPLANE 2 — PCP-02 (HP ProDesk 400 G2)
-  # ─────────────────────────────────────────────
   - hostname: PCP-02
     ipAddress: 10.10.5.12
     controlPlane: true
@@ -50,9 +42,6 @@ nodes:
         vip:
           ip: 10.10.5.10
 
-  # ─────────────────────────────────────────────
-  # CONTROLPLANE 3 — PCP-03 (HP ProDesk 400 G2)
-  # ─────────────────────────────────────────────
   - hostname: PCP-03
     ipAddress: 10.10.5.13
     controlPlane: true
@@ -63,9 +52,6 @@ nodes:
         vip:
           ip: 10.10.5.10
 
-  # ─────────────────────────────────────────────
-  # WORKER 1 — PWR-01 (Minisforum MS-01)
-  # ─────────────────────────────────────────────
   - hostname: PWR-01
     ipAddress: 10.10.5.14
     controlPlane: false
@@ -83,9 +69,6 @@ nodes:
             - enp87s0
             - enp89s0
 
-  # ─────────────────────────────────────────────
-  # WORKER 2 — PWR-02 (Minisforum MS-01)
-  # ─────────────────────────────────────────────
   - hostname: PWR-02
     ipAddress: 10.10.5.15
     controlPlane: false
@@ -103,9 +86,6 @@ nodes:
             - enp87s0
             - enp89s0
 
-# ─────────────────────────────────────────────
-# PATCH CONTROLPLANE
-# ─────────────────────────────────────────────
 controlPlane:
   machineSpec:
     secureboot: true
@@ -122,7 +102,6 @@ controlPlane:
         allowSchedulingOnControlPlanes: true
         proxy:
           disabled: true
-        # Expose metrics endpoints so Prometheus can scrape them
         controllerManager:
           extraArgs:
             bind-address: 0.0.0.0
@@ -133,9 +112,6 @@ controlPlane:
           extraArgs:
             listen-metrics-urls: http://0.0.0.0:2381
 
-# ─────────────────────────────────────────────
-# PATCH WORKER
-# ─────────────────────────────────────────────
 worker:
   machineSpec:
     secureboot: true

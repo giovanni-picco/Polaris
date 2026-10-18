@@ -15,5 +15,4 @@ parameters:
   staleReplicaTimeout: "30"
   fsType: ext4
   dataLocality: strict-local
-  # Group without jobs, otherwise Longhorn auto-assigns the "default" group
   recurringJobSelector: '[{"name":"none","isGroup":true}]'

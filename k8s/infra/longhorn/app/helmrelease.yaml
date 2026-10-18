@@ -30,8 +30,6 @@ spec:
 
     defaultSettings:
       logLevel: Warn
-      # Drain nodes holding the only replica of a detached volume (restic caches,
-      # VolSync temporary volumes): the replica stays on disk across a reboot
       nodeDrainPolicy: allow-if-replica-is-stopped
 
     defaultBackupStore:

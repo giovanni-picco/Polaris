@@ -21,8 +21,6 @@ spec:
     crds: CreateReplace
     cleanupOnFail: true
 
-  # The chart only renders its ServiceMonitor when the CRD already exists,
-  # which depends on install order; it is defined in core/prometheus/monitors
   postRenderers:
     - kustomize:
         patches:

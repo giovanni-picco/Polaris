@@ -1,5 +1,3 @@
-# The chart policies only let Longhorn components reach the manager: allow
-# Prometheus to scrape its metrics endpoint as well.
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:

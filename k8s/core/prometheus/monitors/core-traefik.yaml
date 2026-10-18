@@ -1,4 +1,3 @@
-# core: Traefik
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: PodMonitor

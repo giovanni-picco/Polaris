@@ -9,8 +9,6 @@ spec:
     repository: ${APP}-volsync
     copyMethod: Snapshot
     volumeSnapshotClassName: longhorn-snapclass
-    # The Longhorn snapshot used to populate the PVC lives in this volume,
-    # so it is kept (no cleanupTempPVC) on a class that is deleted with it
     storageClassName: longhorn-volsync
     accessModes: [ReadWriteOnce]
     capacity: ${VOLSYNC_CAPACITY}

@@ -1,4 +1,3 @@
-# infra: cert-manager controller, cainjector and webhook
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor

@@ -51,7 +51,6 @@ spec:
       prometheus:
         enabled: true
 
-    # Metrics endpoints only: the PodMonitors live in core/prometheus/monitors
     prometheus:
       enabled: true
 

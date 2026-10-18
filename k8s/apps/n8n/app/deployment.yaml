@@ -30,7 +30,6 @@ spec:
         - name: n8n
           image: docker.n8n.io/n8nio/n8n:2.44.3
           env:
-            # SERVER
             - name: GENERIC_TIMEZONE
               value: "Europe/Rome"
             - name: TZ
@@ -42,7 +41,6 @@ spec:
             - name: N8N_RUNNERS_ENABLED
               value: "false"
           
-            # SSO
             - name: DB_TYPE
               value: "postgresdb"
             - name: DB_POSTGRESDB_HOST
@@ -61,7 +59,6 @@ spec:
                   name: n8n-pg-app
                   key: password
             
-            # SSO
             - name: N8N_SSO_OIDC_LOGIN_ENABLED
               value: "true"
             - name: N8N_SSO_OIDC_DISCOVERY_ENDPOINT

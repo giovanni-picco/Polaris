@@ -7,8 +7,6 @@ metadata:
 spec:
   commonName: cert-manager-bitwarden-tls
   isCA: true
-  # Long-lived CA with a stable key: the sdk-server certificate is renewed
-  # every 60 days and must always be signed by a CA that is still valid
   duration: 87600h
   renewBefore: 720h
   secretName: bitwarden-tls-certs

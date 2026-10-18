@@ -10,7 +10,6 @@ spec:
     repository: ${APP}-volsync
     copyMethod: Snapshot
     volumeSnapshotClassName: longhorn-snapclass
-    # Point-in-time clone read by the mover, deleted after each sync
     storageClassName: longhorn-volsync
     cacheStorageClassName: longhorn-ephemeral
     cacheCapacity: 1Gi

@@ -1,4 +1,3 @@
-# infra: Longhorn manager (see infra/longhorn/app/networkpolicy-metrics.yaml)
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor

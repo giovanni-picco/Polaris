@@ -62,7 +62,6 @@ spec:
       persistence:
         type: pvc
         enabled: true
-        # PVC created by the VolSync component
         existingClaim: grafana-data
       resources:
         requests: { cpu: 50m, memory: 512Mi }
@@ -109,8 +108,6 @@ spec:
       prometheusSpec:
         scrapeInterval: 30s
         evaluationInterval: 30s
-        # Pick up monitors and rules from every namespace, not only the ones
-        # labelled release=kube-prometheus-stack
         serviceMonitorSelectorNilUsesHelmValues: false
         podMonitorSelectorNilUsesHelmValues: false
         probeSelectorNilUsesHelmValues: false
@@ -146,12 +143,9 @@ spec:
         requests: { cpu: 10m, memory: 48Mi }
         limits: { memory: 96Mi }
 
-    # Cilium runs with kubeProxyReplacement, there is no kube-proxy to scrape
     kubeProxy:
       enabled: false
 
-    # Talos runs etcd as a host service, not a pod: scrape the control plane
-    # nodes directly (metrics listener configured in talconfig.yaml)
     kubeEtcd:
       endpoints:
         - 10.10.5.11

@@ -1,4 +1,3 @@
-# infra: Cilium agent, operator, Envoy and Hubble (hostNetwork pods)
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: PodMonitor

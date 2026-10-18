@@ -16,7 +16,6 @@ spec:
 
   values:
     args:
-      # Talos kubelets serve a self-signed certificate
       - --kubelet-insecure-tls
     resources:
       requests: { cpu: 10m, memory: 64Mi }

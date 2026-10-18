@@ -1,4 +1,3 @@
-# core: authentik server and worker (outposts create their own ServiceMonitors)
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
