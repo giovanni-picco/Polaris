@@ -29,7 +29,7 @@ traefik.ingress.kubernetes.io/router.entrypoints: websecure           # HTTPS on
 Apps without their own login add authentik forward-auth with a `Middleware` in their namespace and:
 
 ```yaml
-traefik.ingress.kubernetes.io/router.middlewares: <namespace>-authentik@kubernetescrd
+traefik.ingress.kubernetes.io/router.middlewares: <namespace>_authentik@kubernetescrd
 ```
 
 ### `ingresses/` — UIs of lower layers
