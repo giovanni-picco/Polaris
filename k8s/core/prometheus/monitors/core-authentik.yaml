@@ -1,0 +1,17 @@
+# core: authentik server and worker (outposts create their own ServiceMonitors)
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: authentik
+spec:
+  namespaceSelector:
+    matchNames: [authentik]
+  selector:
+    matchExpressions:
+      - key: app.kubernetes.io/component
+        operator: In
+        values: [server-metrics, worker-metrics]
+  endpoints:
+    - port: metrics
+

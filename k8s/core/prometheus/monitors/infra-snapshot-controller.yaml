@@ -1,0 +1,15 @@
+# infra: CSI snapshot controller
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: snapshot-controller
+spec:
+  namespaceSelector:
+    matchNames: [kube-system]
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: snapshot-controller
+  podMetricsEndpoints:
+    - port: http
+

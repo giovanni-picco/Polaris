@@ -24,3 +24,22 @@ spec:
     substituteFrom:
       - kind: ConfigMap
         name: cluster-config
+
+---
+# ServiceMonitors/PodMonitors for infra and core components. They live here,
+# after the Prometheus CRDs, so that those components never depend on
+# kube-prometheus-stack and can be deployed before it on a fresh cluster.
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: core-prometheus-monitors
+  namespace: flux-system
+spec:
+  interval: 5m
+  path: ./k8s/core/prometheus/monitors
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  dependsOn:
+    - name: core-prometheus-stack-app

@@ -1,0 +1,19 @@
+# infra: VolSync controller, behind kube-rbac-proxy
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: volsync
+spec:
+  namespaceSelector:
+    matchNames: [volsync-system]
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: volsync
+      control-plane: volsync-controller
+  endpoints:
+    - port: https
+      scheme: https
+      bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+      tlsConfig:
+        insecureSkipVerify: true

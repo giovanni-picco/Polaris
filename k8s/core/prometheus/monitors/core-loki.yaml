@@ -1,0 +1,33 @@
+# core: Loki and Alloy
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: loki
+spec:
+  namespaceSelector:
+    matchNames: [loki]
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: loki
+    matchExpressions:
+      - key: prometheus.io/service-monitor
+        operator: NotIn
+        values: ["false"]
+  endpoints:
+    - port: http-metrics
+
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: alloy
+spec:
+  namespaceSelector:
+    matchNames: [loki]
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: alloy
+  endpoints:
+    - port: http-metrics
+
