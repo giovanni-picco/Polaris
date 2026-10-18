@@ -109,6 +109,13 @@ spec:
       prometheusSpec:
         scrapeInterval: 30s
         evaluationInterval: 30s
+        # Pick up monitors and rules from every namespace, not only the ones
+        # labelled release=kube-prometheus-stack
+        serviceMonitorSelectorNilUsesHelmValues: false
+        podMonitorSelectorNilUsesHelmValues: false
+        probeSelectorNilUsesHelmValues: false
+        scrapeConfigSelectorNilUsesHelmValues: false
+        ruleSelectorNilUsesHelmValues: false
         resources:
           requests:
             memory: 1536Mi
@@ -142,3 +149,14 @@ spec:
     # Cilium runs with kubeProxyReplacement, there is no kube-proxy to scrape
     kubeProxy:
       enabled: false
+
+    # Talos runs etcd as a host service, not a pod: scrape the control plane
+    # nodes directly (metrics listener configured in talconfig.yaml)
+    kubeEtcd:
+      endpoints:
+        - 10.10.5.11
+        - 10.10.5.12
+        - 10.10.5.13
+      service:
+        port: 2381
+        targetPort: 2381
