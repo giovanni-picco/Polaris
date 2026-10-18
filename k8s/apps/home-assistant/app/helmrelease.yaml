@@ -99,11 +99,13 @@ spec:
           features:
             automatic_user_linking: true
 
+    # Deployment + PVC created by the VolSync component (home-assistant-config)
+    controller:
+      type: Deployment
+    deploymentStrategy: Recreate
     persistence:
       enabled: true
-      accessMode: ReadWriteOnce
-      size: 5Gi
-      storageClass: longhorn-default
+      existingClaim: home-assistant-config
 
     resources:
       requests:

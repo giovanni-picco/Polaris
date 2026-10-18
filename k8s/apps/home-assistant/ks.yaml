@@ -10,7 +10,16 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
+  dependsOn:
+    - name: infra-volsync-app
   postBuild:
+    substitute:
+      APP: home-assistant
+      VOLSYNC_CLAIM: home-assistant-config
+      VOLSYNC_CAPACITY: 5Gi
+      VOLSYNC_SCHEDULE: "45 4 * * *"
+      VOLSYNC_UID: "0"
+      VOLSYNC_GID: "0"
     substituteFrom:
       - kind: ConfigMap
         name: cluster-config
