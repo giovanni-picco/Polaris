@@ -13,7 +13,7 @@ spec:
       owner: authentik
   storage:
     size: 20Gi
-    storageClass: longhorn-critical
+    storageClass: longhorn-database
   resources:
     requests:
       cpu: 500m 

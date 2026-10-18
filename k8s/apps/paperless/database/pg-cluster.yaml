@@ -13,7 +13,7 @@ spec:
       owner: paperless
   storage:
     size: 10Gi
-    storageClass: longhorn-critical
+    storageClass: longhorn-database
   resources:
     requests:
       cpu: 250m
