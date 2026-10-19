@@ -28,7 +28,7 @@ spec:
                     values: ["true"]
       containers:
         - name: n8n
-          image: docker.n8n.io/n8nio/n8n:2.44.3
+          image: docker.n8n.io/n8nio/n8n:2.44.4
           env:
             - name: GENERIC_TIMEZONE
               value: "Europe/Rome"
