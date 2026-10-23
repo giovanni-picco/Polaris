@@ -27,7 +27,7 @@ spec:
         fsGroupChangePolicy: OnRootMismatch
       containers:
         - name: jellyfin
-          image: docker.io/jellyfin/jellyfin:12.2
+          image: docker.io/jellyfin/jellyfin:12.3
 
           env:
             - name: JELLYFIN_PublishedServerUrl
