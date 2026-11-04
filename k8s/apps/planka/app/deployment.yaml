@@ -27,7 +27,7 @@ spec:
                     values: ["true"]
       containers:
         - name: planka
-          image: ghcr.io/plankanban/planka:2.2.1
+          image: ghcr.io/plankanban/planka:2.3.0
           env:
             - name: BASE_URL
               value: "https://planka.${CLUSTER_DOMAIN}"
