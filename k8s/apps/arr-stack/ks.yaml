@@ -207,8 +207,10 @@ spec:
     substitute:
       APP: lazylibrarian
       VOLSYNC_CLAIM: lazylibrarian-config
-      VOLSYNC_CAPACITY: 1Gi
+      VOLSYNC_CAPACITY: 2Gi
       VOLSYNC_SCHEDULE: "25 4 * * *"
+      VOLSYNC_UID: "911"
+      VOLSYNC_GID: "911"
     substituteFrom:
       - kind: ConfigMap
         name: cluster-config
