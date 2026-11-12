@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lazylibrarian
+  namespace: arr-stack
+  labels:
+    app: lazylibrarian
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lazylibrarian
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: lazylibrarian
+    spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: node-role/worker
+                    operator: In
+                    values: ["true"]
+
+      containers:
+        - name: lazylibrarian
+          image: scr.io/linuxserver/lazylibrarian:version-f22b7404
+          env:
+            - name: TZ
+              value: "Europe/Rome"
+            - name: DOCKER_MODS
+              value: "linuxserver/mods:universal-calibre|linuxserver/mods:lazylibrarian-ffmpeg"
+
+          ports:
+            - containerPort: 5299
+              name: http
+
+          volumeMounts:
+            - name: lazylibrarian-config
+              mountPath: /config
+            - name: media-torrents
+              mountPath: /downloads
+            - name: media-media
+              mountPath: /data
+
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "128Mi"
+            limits:
+              cpu: "300m"
+              memory: "512Mi"
+
+      volumes:
+        - name: lazylibrarian-config
+          persistentVolumeClaim:
+            claimName: lazylibrarian-config
+        - name: media-torrents
+          persistentVolumeClaim:
+            claimName: media-torrents
+        - name: media-media
+          persistentVolumeClaim:
+            claimName: media-media

@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: lazylibrarian
+  namespace: arr-stack
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: &domain books.${CLUSTER_DOMAIN}
+    cert-manager.io/cluster-issuer: letsencrypt
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.middlewares: arr-stack_authentik@kubernetescrd
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts:
+        - *domain
+      secretName: lazylibrarian-tls
+  rules:
+    - host: *domain
+      http:
+        paths:
+          - backend:
+              service:
+                name: lazylibrarian
+                port:
+                  number: 7474
+            path: /
+            pathType: Prefix
