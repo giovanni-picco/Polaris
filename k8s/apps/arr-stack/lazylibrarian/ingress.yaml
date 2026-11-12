@@ -22,6 +22,6 @@ spec:
               service:
                 name: lazylibrarian
                 port:
-                  number: 7474
+                  number: 5299
             path: /
             pathType: Prefix

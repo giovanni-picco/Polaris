@@ -34,11 +34,31 @@ spec:
             - name: TZ
               value: "Europe/Rome"
             - name: DOCKER_MODS
-              value: "linuxserver/mods:universal-calibre|linuxserver/mods:lazylibrarian-ffmpeg"
+              value: "linuxserver/mods:lazylibrarian-ffmpeg"
 
           ports:
             - containerPort: 5299
               name: http
+
+          startupProbe:
+            tcpSocket:
+              port: http
+            periodSeconds: 10
+            failureThreshold: 60
+
+          livenessProbe:
+            tcpSocket:
+              port: http
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+
+          readinessProbe:
+            tcpSocket:
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
 
           volumeMounts:
             - name: lazylibrarian-config
@@ -51,10 +71,10 @@ spec:
           resources:
             requests:
               cpu: "50m"
-              memory: "128Mi"
+              memory: "256Mi"
             limits:
               cpu: "300m"
-              memory: "512Mi"
+              memory: "1Gi"
 
       volumes:
         - name: lazylibrarian-config
