@@ -29,7 +29,7 @@ spec:
 
       containers:
         - name: lazylibrarian
-          image: scr.io/linuxserver/lazylibrarian:version-f22b7404
+          image: ghcr.io/linuxserver/lazylibrarian:version-600a11cc
           env:
             - name: TZ
               value: "Europe/Rome"
