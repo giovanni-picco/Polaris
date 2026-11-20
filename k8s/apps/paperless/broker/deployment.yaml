@@ -29,7 +29,7 @@ spec:
                     values: ["true"]
       containers:
         - name: broker
-          image: docker.io/valkey/valkey:9.1.4-alpine
+          image: docker.io/valkey/valkey:9.2.0-alpine
           ports:
             - containerPort: 6379
               name: redis
