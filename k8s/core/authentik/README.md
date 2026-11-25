@@ -28,8 +28,8 @@ flowchart LR
 
 | Method | Apps |
 | --- | --- |
-| **OIDC** | Grafana, Paperless, Karakeep, Home Assistant ([hass-oidc-auth](https://github.com/christiaangoossens/hass-oidc-auth)), autobrr |
-| **Forward-auth** (Traefik middleware → outpost `ak-outpost-traefik`) | Sonarr, Radarr, Prowlarr, qBittorrent, Cleanuparr, Longhorn |
+| **OIDC** | Grafana, Paperless, Karakeep, Home Assistant ([hass-oidc-auth](https://github.com/christiaangoossens/hass-oidc-auth)) |
+| **Forward-auth** (Traefik middleware → outpost `ak-outpost-traefik`) | Sonarr, Radarr, Prowlarr, qBittorrent, Longhorn |
 | **LDAP** (outpost `ak-outpost-ldap`) | available for apps speaking LDAP only |
 | **Own login** | Jellyfin, Seerr |
 

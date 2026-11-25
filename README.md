@@ -81,7 +81,7 @@ Every application volume has a local copy on the NAS and an off-site copy on Het
 
 | App | What it does |
 | --- | --- |
-| [arr-stack](k8s/apps/arr-stack/README.md) | Media automation: Sonarr, Radarr, Prowlarr, qBittorrent (behind a VPN), autobrr, Cleanuparr |
+| [arr-stack](k8s/apps/arr-stack/README.md) | Media automation: Sonarr, Radarr, Prowlarr, qBittorrent (behind a VPN) |
 | [jellyfin](k8s/apps/jellyfin/README.md) | Media server with Intel Quick Sync transcoding |
 | [seerr](k8s/apps/seerr/README.md) | Media requests for Jellyfin users |
 | [paperless](k8s/apps/paperless/README.md) | Document archive with OCR and AI tagging |

@@ -138,59 +138,6 @@ spec:
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: apps-arr-stack-autobrr
-  namespace: flux-system
-spec:
-  interval: 5m
-  path: ./k8s/apps/arr-stack/autobrr
-  prune: true
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-  dependsOn:
-    - name: infra-volsync-app
-  postBuild:
-    substitute:
-      APP: autobrr
-      VOLSYNC_CLAIM: autobrr-config
-      VOLSYNC_CAPACITY: 1Gi
-      VOLSYNC_SCHEDULE: "0 4 * * *"
-      VOLSYNC_UID: "0"
-      VOLSYNC_GID: "0"
-    substituteFrom:
-      - kind: ConfigMap
-        name: cluster-config
----
-apiVersion: kustomize.toolkit.fluxcd.io/v1
-kind: Kustomization
-metadata:
-  name: apps-arr-stack-cleanuparr
-  namespace: flux-system
-spec:
-  interval: 5m
-  path: ./k8s/apps/arr-stack/cleanuparr
-  prune: true
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-  dependsOn:
-    - name: infra-volsync-app
-    - name: apps-arr-stack-media
-  postBuild:
-    substitute:
-      APP: cleanuparr
-      VOLSYNC_CLAIM: cleanuparr-config
-      VOLSYNC_CAPACITY: 1Gi
-      VOLSYNC_SCHEDULE: "5 4 * * *"
-      VOLSYNC_UID: "1000"
-      VOLSYNC_GID: "1000"
-    substituteFrom:
-      - kind: ConfigMap
-        name: cluster-config
----
-apiVersion: kustomize.toolkit.fluxcd.io/v1
-kind: Kustomization
-metadata:
   name: apps-arr-stack-lazylibrarian
   namespace: flux-system
 spec:

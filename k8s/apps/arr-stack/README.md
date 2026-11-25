@@ -1,6 +1,6 @@
 # arr-stack
 
-Media automation: finds, downloads, renames and cleans up movies and series, which [Jellyfin](../jellyfin/README.md) then serves. Requests come from [Seerr](../seerr/README.md).
+Media automation: finds, downloads and renames movies and series, which [Jellyfin](../jellyfin/README.md) then serves. Requests come from [Seerr](../seerr/README.md).
 
 | | |
 | --- | --- |
@@ -14,9 +14,7 @@ flowchart LR
     seerr([Seerr]) --> sonarr & radarr
     prowlarr[Prowlarr] -->|indexers| sonarr[Sonarr] & radarr[Radarr]
     prowlarr --> flare[FlareSolverr]
-    autobrr[autobrr] -->|IRC announces| qbit
     sonarr & radarr -->|downloads| qbit[qBittorrent<br/><sub>+ gluetun VPN</sub>]
-    cleanup[Cleanuparr] -.->|stalled / unwanted| qbit
     qbit --> nas[(NAS media)]
     sonarr & radarr -->|import| nas
 ```
@@ -29,8 +27,6 @@ flowchart LR
 | Radarr | `radarr.${CLUSTER_DOMAIN}` | forward-auth | `radarr-config` (911) | 04:20 |
 | Prowlarr | `prowlarr.${CLUSTER_DOMAIN}` | forward-auth | `prowlarr-config` (911) | 04:10 |
 | qBittorrent | `qbittorrent.${CLUSTER_DOMAIN}` | forward-auth | `qbittorrent-config` (1000) | 04:15 |
-| Cleanuparr | `cleanuparr.${CLUSTER_DOMAIN}` | forward-auth | `cleanuparr-config` (1000) | 04:05 |
-| autobrr | `autobrr.${CLUSTER_DOMAIN}` | OIDC | `autobrr-config` (root) | 04:00 |
 | FlareSolverr | internal only | — | — | — |
 
 Forward-auth uses the `authentik` Middleware in `media/`, pointing to the `ak-outpost-traefik` outpost. The UID column is the user the VolSync mover runs as: it must match the owner of the files (linuxserver.io images write as `911`).
@@ -47,7 +43,7 @@ Each app has its own Flux Kustomization (`apps-arr-stack-<app>`), so one failing
 | Volume | NAS path | Mounted by |
 | --- | --- | --- |
 | `media-root` | `/volume1/media/` | Sonarr, Radarr (downloads and library on the same share, so imports are hardlinks) |
-| `media-torrents` | `/volume1/media/torrents` | qBittorrent, Cleanuparr |
+| `media-torrents` | `/volume1/media/torrents` | qBittorrent |
 | `media-media` | `/volume1/media/media` | — (library only) |
 
 ## qBittorrent and the VPN
@@ -58,5 +54,4 @@ The WebUI has authentication disabled for every subnet (`AuthSubnetWhitelist=0.0
 
 ## Maintenance
 
-- **Cleanuparr not ready after a restart**: it caches the health of qBittorrent/Sonarr/Radarr from its startup. If it starts before them it stays *Unhealthy*; `kubectl -n arr-stack rollout restart deploy/cleanuparr`.
 - **Restore an app**: see the [VolSync runbooks](../../components/README.md#runbooks).
