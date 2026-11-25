@@ -23,9 +23,6 @@ spec:
     cleanupOnFail: true
   
   values:
-    service:
-      type: LoadBalancer
-
     ingressRoute:
       dashboard:
         enabled: true
