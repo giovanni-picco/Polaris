@@ -7,6 +7,7 @@ data:
   USERMAP_UID: "1000"
   USERMAP_GID: "1000"
   PAPERLESS_URL: "https://paperless.${CLUSTER_DOMAIN}"
+  PAPERLESS_ALLOWED_HOSTS: "paperless.${CLUSTER_DOMAIN},localhost"
   PAPERLESS_TIME_ZONE: "Europe/Rome"
   PAPERLESS_OCR_LANGUAGE: "ita"
 
