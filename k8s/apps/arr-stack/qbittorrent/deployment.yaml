@@ -28,6 +28,25 @@ spec:
                     values: ["true"]
 
       initContainers:
+        # Refresh the VPN server list before connecting: the list built into the
+        # image ages, and PIA renumbers its servers (stale IPs = TLS handshake
+        # timeout forever). Non-fatal: falls back to the built-in list.
+        - image: ghcr.io/qdm12/gluetun:v3.41.3
+          name: gluetun-servers-update
+          command:
+            - sh
+            - -c
+            - /gluetun-entrypoint update -enduser -providers 'private internet access' || echo 'server list update failed, using the built-in one'
+          volumeMounts:
+            - name: gluetun-data
+              mountPath: /gluetun
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              memory: 256Mi
+
         - image: ghcr.io/qdm12/gluetun:v3.41.3
           name: gluetun
 
@@ -65,6 +84,12 @@ spec:
               value: "10.244.0.0/16,10.10.0.0/16,192.168.0.0/16"
             - name: FIREWALL_INPUT_PORTS
               value: "8080"
+            - name: UPDATER_PERIOD
+              value: "24h"
+
+          volumeMounts:
+            - name: gluetun-data
+              mountPath: /gluetun
 
           restartPolicy: Always
 
@@ -148,6 +173,8 @@ spec:
               memory: 2Gi
 
       volumes:
+        - name: gluetun-data
+          emptyDir: {}
         - name: qbittorrent-config
           persistentVolumeClaim:
             claimName: qbittorrent-config

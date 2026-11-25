@@ -50,6 +50,8 @@ Each app has its own Flux Kustomization (`apps-arr-stack-<app>`), so one failing
 
 qBittorrent runs with a [gluetun](https://github.com/qdm12/gluetun) sidecar (native sidecar init container): all its traffic leaves through Private Internet Access (Netherlands). The gluetun firewall allows the pod, LAN and cluster ranges so the WebUI and the *arr apps keep working. PIA credentials come from Bitwarden.
 
+Before the sidecar starts, the `gluetun-servers-update` init container runs `gluetun update` and writes a fresh server list to an `emptyDir` on `/gluetun`; the sidecar uses it when it is newer than the list built into the image, and refreshes it every 24h (`UPDATER_PERIOD`). Without it, a restart after PIA renumbers its servers loops on `TLS key negotiation failed` against dead IPs. If the update fails the pod still starts with the built-in list.
+
 The WebUI has authentication disabled for every subnet (`AuthSubnetWhitelist=0.0.0.0/0`): access control relies entirely on authentik forward-auth at the Ingress.
 
 ## Maintenance
