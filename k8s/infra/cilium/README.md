@@ -30,6 +30,16 @@ Cilium is the only component installed by hand: nodes need a CNI before Flux can
 
 > [!WARNING]
 > Keep `talos/cilium/values.yaml` in sync with the HelmRelease values for anything required to boot (kube-proxy replacement, API endpoint, cgroup, capabilities): it is what a rebuilt cluster starts with.
+>
+> Never enable in the bootstrap values a feature the HelmRelease does not have. Flux applies with server-side apply and does not remove `cilium-config` keys written by the bootstrap `helm` install, so they survive the adoption while the matching RBAC disappears. It already happened with `ingressController`: the leftover `enable-ingress-controller=true` made the operator crash-loop (`ingresses ... is forbidden`) until the keys were removed by hand. To spot leftovers:
+>
+> ```sh
+> kubectl -n kube-system get cm cilium-config --show-managed-fields -o json \
+>   | jq -r '[.metadata.managedFields[] | {(.manager): (.fieldsV1."f:data" // {} | keys)}] | add
+>            | (.helm // []) - (."helm-controller" // []) | .[]'
+> ```
+>
+> It lists keys written only by the bootstrap install: the output should be empty.
 
 ## Maintenance
 
