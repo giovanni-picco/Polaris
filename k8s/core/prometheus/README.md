@@ -19,7 +19,7 @@ flowchart LR
 
 | Folder | Flux Kustomization | Content |
 | --- | --- | --- |
-| `app/` | `core-prometheus-stack-app` | HelmRelease, Grafana OAuth secret, `volsync/` (Grafana volume, own namespace scope) |
+| `app/` | `core-prometheus-stack-app` | HelmRelease, Grafana OAuth and Telegram secrets, `volsync/` (Grafana volume, own namespace scope) |
 | `monitors/` | `core-prometheus-monitors` | Monitors for `infra` and `core` components |
 
 ### `monitors/`
@@ -46,12 +46,38 @@ Apps come after `core`, so they can ship their own monitors next to their manife
 - Scrape/evaluation interval 30 s; 25 Gi volume; memory 1.5 Gi request / 3 Gi limit.
 - Control plane scraping on Talos: `kubeProxy` disabled (Cilium replaces it); `kube-controller-manager` and `kube-scheduler` bind on `0.0.0.0`, and etcd exposes metrics on `:2381`, both configured in [talconfig.yaml](../../../talos/talconfig.yaml). etcd runs as a host service, so `kubeEtcd.endpoints` lists the control plane IPs.
 
-> [!NOTE]
-> Alertmanager has no receivers yet (`null`): alerts are visible in its UI and in Grafana but are not sent anywhere.
+
+## Alerting
+
+Alerts go to **Telegram** through Alertmanager: the chart's default rules (`KubePodCrashLooping`, `KubePodNotReady`, `KubePersistentVolumeFillingUp`, `etcd*`, ...) and Flux reconcile errors forwarded by [flux-notifications](../flux-notifications/README.md).
+
+```mermaid
+flowchart LR
+    prom[Prometheus rules] --> am[Alertmanager]
+    flux[Flux notification-controller] -->|Provider type alertmanager| am
+    am --> tg[Telegram bot]
+```
+
+| Route | Receiver | Notes |
+| --- | --- | --- |
+| `Watchdog`, `InfoInhibitor`, `severity=info` | `null` | dropped |
+| `reportingcontroller` set (Flux events) | `telegram-flux` | no "resolved" message: Flux alerts only expire |
+| everything else | `telegram` | firing + resolved |
+
+- Grouped by `namespace` + `alertname`; chart defaults for timings (`group_wait` 30s, `group_interval` 5m, `repeat_interval` 12h) and inhibition (critical silences warning/info of the same alert).
+- `resolve_timeout: 1h` only affects alerts without `endsAt` (Flux events): an object that keeps failing stays one alert.
+- Message format: `templateFiles/telegram.tmpl` in the HelmRelease (HTML parse mode). No `$` in config or templates, Flux postBuild substitution runs on the HelmRelease.
+- Bot token and chat ID come from Bitwarden (`ExternalSecret/alertmanager-telegram`, keys `bot_token`, `chat_id`), mounted with `alertmanagerSpec.secrets` and read with `bot_token_file`/`chat_id_file`.
+
+To mute something temporarily, create a silence from the Alertmanager UI.
 
 ## Maintenance
 
 ```sh
+# alerts currently firing
+kubectl get --raw '/api/v1/namespaces/prometheus/services/http:kube-prometheus-stack-alertmanager:9093/proxy/api/v2/alerts?active=true' \
+  | jq -r '.[] | "\(.labels.severity) \(.labels.alertname) \(.labels.namespace // "")"'
+
 # targets that are not up
 kubectl get --raw '/api/v1/namespaces/prometheus/services/http:kube-prometheus-stack-prometheus:9090/proxy/api/v1/targets?state=active' \
   | jq -r '.data.activeTargets[] | select(.health!="up") | "\(.scrapePool) \(.lastError)"'

@@ -1,0 +1,69 @@
+---
+apiVersion: notification.toolkit.fluxcd.io/v1
+kind: Alert
+metadata:
+  name: flux-errors
+spec:
+  providerRef:
+    name: alertmanager
+  eventSeverity: error
+  eventSources:
+    - kind: GitRepository
+      name: "*"
+    - kind: OCIRepository
+      name: "*"
+    - kind: HelmRepository
+      name: "*"
+    - kind: Kustomization
+      name: "*"
+    # Alert sources have no namespace wildcard: one entry per namespace that
+    # holds a HelmRelease. Add new ones here.
+    - kind: HelmRelease
+      name: "*"
+      namespace: authentik
+    - kind: HelmRelease
+      name: "*"
+      namespace: cert-manager
+    - kind: HelmRelease
+      name: "*"
+      namespace: cnpg-system
+    - kind: HelmRelease
+      name: "*"
+      namespace: external-dns
+    - kind: HelmRelease
+      name: "*"
+      namespace: external-secrets
+    - kind: HelmRelease
+      name: "*"
+      namespace: home-assistant
+    - kind: HelmRelease
+      name: "*"
+      namespace: karakeep
+    - kind: HelmRelease
+      name: "*"
+      namespace: kube-system
+    - kind: HelmRelease
+      name: "*"
+      namespace: loki
+    - kind: HelmRelease
+      name: "*"
+      namespace: longhorn-system
+    - kind: HelmRelease
+      name: "*"
+      namespace: openspeedtest
+    - kind: HelmRelease
+      name: "*"
+      namespace: prometheus
+    - kind: HelmRelease
+      name: "*"
+      namespace: tailscale
+    - kind: HelmRelease
+      name: "*"
+      namespace: traefik
+    - kind: HelmRelease
+      name: "*"
+      namespace: volsync-system
+  exclusionList:
+    # transient errors that the next reconcile fixes on its own
+    - ".*context deadline exceeded.*"
+    - ".*connection refused.*"

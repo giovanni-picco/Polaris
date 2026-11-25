@@ -6,6 +6,7 @@ resources:
   - ./external-dns
   - ./traefik
   - ./prometheus
+  - ./flux-notifications
   - ./loki
   - ./authentik
   - ./tailscale

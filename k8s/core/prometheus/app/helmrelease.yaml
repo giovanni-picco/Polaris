@@ -68,6 +68,62 @@ spec:
         limits: { memory: 1Gi }
 
     alertmanager:
+      # Merged into the chart's default config: inhibit_rules, timings and
+      # templates come from the chart, route/receivers are replaced.
+      # No "$" in config/templates: Flux postBuild substitution runs on this file.
+      config:
+        global:
+          # Only applies to alerts without endsAt, i.e. Flux events
+          # (Prometheus always sets endsAt): a failing object that keeps
+          # erroring stays one alert instead of flapping every 5m.
+          resolve_timeout: 1h
+        route:
+          receiver: telegram
+          group_by: [namespace, alertname]
+          routes:
+            - receiver: "null"
+              matchers:
+                - alertname =~ "Watchdog|InfoInhibitor"
+            - receiver: "null"
+              matchers:
+                - severity = "info"
+            # Flux events (Provider type alertmanager): they only expire,
+            # they never really resolve, so no "resolved" message.
+            - receiver: telegram-flux
+              matchers:
+                - reportingcontroller =~ ".+"
+        receivers:
+          - name: "null"
+          - name: telegram
+            telegram_configs:
+              - bot_token_file: /etc/alertmanager/secrets/alertmanager-telegram/bot_token
+                chat_id_file: /etc/alertmanager/secrets/alertmanager-telegram/chat_id
+                parse_mode: HTML
+                send_resolved: true
+                message: '{{ template "telegram.polaris.message" . }}'
+          - name: telegram-flux
+            telegram_configs:
+              - bot_token_file: /etc/alertmanager/secrets/alertmanager-telegram/bot_token
+                chat_id_file: /etc/alertmanager/secrets/alertmanager-telegram/chat_id
+                parse_mode: HTML
+                send_resolved: false
+                message: '{{ template "telegram.polaris.message" . }}'
+      templateFiles:
+        telegram.tmpl: |-
+          {{ define "telegram.polaris.message" }}
+          {{- if eq .Status "firing" }}🔥{{ else }}✅{{ end }} <b>{{ .CommonLabels.alertname }}</b>
+          {{- with .CommonLabels.severity }} · {{ . }}{{ end }}
+          {{- if eq .Status "resolved" }} · resolved{{ end }}
+          {{- range .Alerts }}
+
+          {{ if eq .Status "firing" }}•{{ else }}✓{{ end }}
+          {{- if .Annotations.description }} {{ .Annotations.description | html }}
+          {{- else if .Annotations.message }} <code>{{ .Labels.kind }} {{ .Labels.namespace }}/{{ .Labels.name }}</code>: {{ .Annotations.message | html }}
+          {{- else }} {{ .Annotations.summary | html }}
+          {{- end }}
+          {{- with .Annotations.runbook_url }} <a href="{{ . }}">runbook</a>{{ end }}
+          {{- end }}
+          {{- end }}
       ingress:
         enabled: true
         ingressClassName: traefik
@@ -83,6 +139,7 @@ spec:
             secretName: alertmanager-tls
         https: false
       alertmanagerSpec:
+        secrets: [alertmanager-telegram]
         storage:
           volumeClaimTemplate:
             spec:
