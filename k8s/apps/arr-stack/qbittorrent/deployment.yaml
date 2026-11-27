@@ -86,6 +86,15 @@ spec:
               value: "8080"
             - name: UPDATER_PERIOD
               value: "24h"
+            # Keep encapsulated packets under the pod MTU (1450, Cilium VXLAN)
+            # and the WAN path MTU (1492, PPPoE). With the default tun-mtu 1500
+            # OpenVPN's UDP packets (~1550 bytes) get fragmented, and fragments
+            # leaving the pod are dropped: the tunnel connects but then stalls.
+            # 1380 + ~52 bytes of OpenVPN/UDP/IP overhead = ~1432.
+            - name: OPENVPN_FLAGS
+              value: "--tun-mtu 1380"
+            - name: OPENVPN_MSSFIX
+              value: "1300"
 
           volumeMounts:
             - name: gluetun-data
@@ -110,14 +119,10 @@ spec:
             periodSeconds: 10
             timeoutSeconds: 3
             failureThreshold: 3
-          livenessProbe:
-            exec:
-              command:
-                - /gluetun-entrypoint
-                - healthcheck
-            periodSeconds: 15
-            timeoutSeconds: 3
-            failureThreshold: 3
+          # No livenessProbe: gluetun already restarts the VPN by itself when
+          # its healthcheck fails (HEALTH_RESTART_VPN). Having kubelet kill the
+          # container too only adds CrashLoopBackOff delays (up to 5 min) during
+          # which qbittorrent has no network at all.
 
           resources:
             requests:
