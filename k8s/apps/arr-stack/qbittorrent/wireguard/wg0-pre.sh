@@ -15,6 +15,11 @@ for pref in $(ip -4 rule show | awk -F: '/ipproto udp/ {print $1}'); do
   [[ -n "${table}" ]] && ip -4 route flush table "${table}" 2>/dev/null || true
 done
 
+# hotio caches PIA's server list for a day and always takes the first
+# WireGuard server of the region: if that server breaks, every restart picks
+# it again. Fetch a fresh list (PIA reorders it by load) on each start.
+rm -f "${CONFIG_DIR:-/config}/wireguard/pia-regions.json"
+
 # Cilium gives the pod a /32 and a link-scope route to its gateway on eth0.
 gw=$(ip -4 route show dev eth0 scope link | awk 'NR == 1 {print $1}')
 ip -4 route replace default via "${gw}" dev eth0 mtu "${POD_ROUTE_MTU}"
