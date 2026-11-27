@@ -91,9 +91,8 @@ spec:
             # OpenVPN's UDP packets (~1550 bytes) get fragmented, and fragments
             # leaving the pod are dropped: the tunnel connects but then stalls.
             # 1380 + ~52 bytes of OpenVPN/UDP/IP overhead = ~1432.
-            # PIA pushes tun-mtu 1500, which overrides the local value: ignore it.
             - name: OPENVPN_FLAGS
-              value: "--tun-mtu 1380 --pull-filter ignore tun-mtu"
+              value: "--tun-mtu 1380"
             - name: OPENVPN_MSSFIX
               value: "1300"
 
