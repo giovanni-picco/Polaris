@@ -6,5 +6,14 @@ resources:
   - ./external-secrets.yaml
   - ./ingress.yaml
   - ./service.yaml
+configMapGenerator:
+  - name: qbittorrent-wireguard-hooks
+    options:
+      annotations:
+        # Shell scripts: keep Flux postBuild from expanding their ${...}.
+        kustomize.toolkit.fluxcd.io/substitute: disabled
+    files:
+      - ./wireguard/wg0-pre.sh
+      - ./wireguard/wg0-post.sh
 components:
   - ../../../components/volsync

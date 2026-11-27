@@ -27,114 +27,18 @@ spec:
                     operator: In
                     values: ["true"]
 
-      initContainers:
-        # Refresh the VPN server list before connecting: the list built into the
-        # image ages, and PIA renumbers its servers (stale IPs = TLS handshake
-        # timeout forever). Non-fatal: falls back to the built-in list.
-        - image: ghcr.io/qdm12/gluetun:v3.41.3
-          name: gluetun-servers-update
-          command:
-            - sh
-            - -c
-            - /gluetun-entrypoint update -enduser -providers 'private internet access' || echo 'server list update failed, using the built-in one'
-          volumeMounts:
-            - name: gluetun-data
-              mountPath: /gluetun
-          resources:
-            requests:
-              cpu: 10m
-              memory: 32Mi
-            limits:
-              memory: 256Mi
-
-        - image: ghcr.io/qdm12/gluetun:v3.41.3
-          name: gluetun
-
-          imagePullPolicy: Always
+      containers:
+        # hotio's image runs the WireGuard tunnel to PIA (config generated from
+        # the PIA credentials, port forwarding included) in the same container
+        # as qBittorrent, with an nftables kill switch: no VPN sidecar.
+        # Kubernetes/Cilium-specific fixes live in the wireguard/ hooks.
+        - name: qbittorrent
+          image: ghcr.io/hotio/qbittorrent:release-5.3.1
 
           securityContext:
             capabilities:
               add: ["NET_ADMIN"]
 
-          ports:
-            - name: http
-              protocol: TCP
-              containerPort: &port 8080
-
-          env:
-            - name: TZ
-              value: 'Europe/Rome'
-            - name: VPN_SERVICE_PROVIDER
-              value: "private internet access"
-            - name: VPN_TYPE
-              value: "openvpn"
-            - name: SERVER_REGIONS
-              value: "Netherlands"
-            - name: OPENVPN_USER
-              valueFrom:
-                secretKeyRef:
-                  name: qbittorrent-secrets
-                  key: pia-main-user
-            - name: OPENVPN_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: qbittorrent-secrets
-                  key: pia-main-password
-            - name: FIREWALL_OUTBOUND_SUBNETS
-              value: "10.244.0.0/16,10.10.0.0/16,192.168.0.0/16"
-            - name: FIREWALL_INPUT_PORTS
-              value: "8080"
-            - name: UPDATER_PERIOD
-              value: "24h"
-            # Keep encapsulated packets under the pod MTU (1450, Cilium VXLAN)
-            # and the WAN path MTU (1492, PPPoE). With the default tun-mtu 1500
-            # OpenVPN's UDP packets (~1550 bytes) get fragmented, and fragments
-            # leaving the pod are dropped: the tunnel connects but then stalls.
-            # 1380 + ~52 bytes of OpenVPN/UDP/IP overhead = ~1432.
-            - name: OPENVPN_FLAGS
-              value: "--tun-mtu 1380"
-            - name: OPENVPN_MSSFIX
-              value: "1300"
-
-          volumeMounts:
-            - name: gluetun-data
-              mountPath: /gluetun
-
-          restartPolicy: Always
-
-          startupProbe:
-            exec:
-              command:
-                - /gluetun-entrypoint
-                - healthcheck
-            initialDelaySeconds: 5
-            periodSeconds: 5
-            timeoutSeconds: 3
-            failureThreshold: 24
-          readinessProbe:
-            exec:
-              command:
-                - /gluetun-entrypoint
-                - healthcheck
-            periodSeconds: 10
-            timeoutSeconds: 3
-            failureThreshold: 3
-          # No livenessProbe: gluetun already restarts the VPN by itself when
-          # its healthcheck fails (HEALTH_RESTART_VPN). Having kubelet kill the
-          # container too only adds CrashLoopBackOff delays (up to 5 min) during
-          # which qbittorrent has no network at all.
-
-          resources:
-            requests:
-              cpu: 50m
-              memory: 64Mi
-            limits:
-              cpu: "1"
-              memory: 256Mi
-
-      containers:
-        - name: qbittorrent
-          image: lscr.io/linuxserver/qbittorrent:5.3.1
           env:
             - name: TZ
               value: Europe/Rome
@@ -142,20 +46,88 @@ spec:
               value: "1000"
             - name: PGID
               value: "1000"
-            - name: WEBUI_PORT
-              value: "8080"
+            - name: UMASK
+              value: "002"
+            - name: WEBUI_PORTS
+              value: "8080/tcp"
+            - name: VPN_ENABLED
+              value: "true"
+            - name: VPN_CONF
+              value: "wg0"
+            - name: VPN_PROVIDER
+              value: "pia"
+            - name: VPN_PIA_USER
+              valueFrom:
+                secretKeyRef:
+                  name: qbittorrent-secrets
+                  key: pia-main-user
+            - name: VPN_PIA_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: qbittorrent-secrets
+                  key: pia-main-password
+            - name: VPN_PIA_PREFERRED_REGION
+              value: "nl_amsterdam"
+            # PIA port forwarding: qBittorrent is started on the forwarded port
+            # and restarted if it changes.
+            - name: VPN_AUTO_PORT_FORWARD
+              value: "true"
+            # Use the DNS servers PIA hands out, through the tunnel.
+            - name: VPN_NAMESERVERS
+              value: "wg"
+            # Exit the container (kubelet restarts it) if internet through the
+            # tunnel stays down for ~10 minutes.
+            - name: VPN_HEALTHCHECK_ENABLED
+              value: "true"
+            # Read by the wireguard/ hooks.
+            - name: WG_MTU
+              value: "1380"
+            - name: POD_ROUTE_MTU
+              value: "1450"
+            - name: LAN_NETWORKS
+              value: "10.244.0.0/16,10.10.0.0/16"
+
+          ports:
+            - name: http
+              protocol: TCP
+              containerPort: &port 8080
 
           volumeMounts:
             - name: qbittorrent-config
               mountPath: /config
+            # The linuxserver image kept config and data together in
+            # /config/qBittorrent; hotio splits them into /config/config and
+            # /config/data. Map both onto the existing directory: no migration,
+            # and switching back to linuxserver keeps working.
+            - name: qbittorrent-config
+              mountPath: /config/config
+              subPath: qBittorrent
+            - name: qbittorrent-config
+              mountPath: /config/data
+              subPath: qBittorrent
+            - name: wireguard-hooks
+              mountPath: /config/wireguard/wg0-pre.sh
+              subPath: wg0-pre.sh
+            - name: wireguard-hooks
+              mountPath: /config/wireguard/wg0-post.sh
+              subPath: wg0-post.sh
             - name: media-torrents
               mountPath: /data/torrents
+
+          # qBittorrent starts only once the tunnel is up and PIA has handed
+          # out a forwarded port.
+          startupProbe:
+            httpGet:
+              path: /
+              port: *port
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 30
 
           livenessProbe:
             httpGet:
               path: /
               port: *port
-            initialDelaySeconds: 60
             periodSeconds: 30
             timeoutSeconds: 5
             failureThreshold: 3
@@ -164,7 +136,6 @@ spec:
             httpGet:
               path: /
               port: *port
-            initialDelaySeconds: 30
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 3
@@ -174,15 +145,16 @@ spec:
               cpu: 100m
               memory: 256Mi
             limits:
-              cpu: 500m
+              cpu: "1"
               memory: 2Gi
 
       volumes:
-        - name: gluetun-data
-          emptyDir: {}
         - name: qbittorrent-config
           persistentVolumeClaim:
             claimName: qbittorrent-config
+        - name: wireguard-hooks
+          configMap:
+            name: qbittorrent-wireguard-hooks
         - name: media-torrents
           persistentVolumeClaim:
             claimName: media-torrents
