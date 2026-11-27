@@ -67,7 +67,7 @@ spec:
                   name: qbittorrent-secrets
                   key: pia-main-password
             - name: VPN_PIA_PREFERRED_REGION
-              value: "nl_amsterdam"
+              value: "swiss"
             # PIA port forwarding: qBittorrent is started on the forwarded port
             # and restarted if it changes.
             - name: VPN_AUTO_PORT_FORWARD
